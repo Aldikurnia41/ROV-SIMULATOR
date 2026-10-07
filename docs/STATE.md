@@ -42,6 +42,9 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 
 | 2026-10-07 | `Assets/Scripts/RoVPhysics.cs` (skrip proyek lama) diubah minimal untuk T3.3: `using Falah.RovSim.Core`, gaya naik/turun dikali `HeaveEfficiency`, gaya maju/mundur dikali `SurgeEfficiency`, RPM propeller dikali efisiensi tiap thruster; 2 properti + 1 helper ditambahkan. Perilaku tanpa gangguan identik (efisiensi = 1) | T3.3 butuh pengait ke gaya thruster; `ThrusterModel` (T1.2) belum ada. Pemetaan thruster mengikuti komentar di kode: 0-1 surge, 2-3 heave; sway belum terikat thruster |
 
+| 2026-10-07 | Modul `Assets/_Falah/Scenario` (asmdef `Falah.RovSim.Scenario`, refs Core). `ScenarioDef`/`ObjectiveDef` berupa kelas C# biasa (bukan ScriptableObject) dan skenario dasar didefinisikan di `ScenarioLibrary`; jadikan ScriptableObject bila perlu diedit di Inspector. Target dicari lewat nama objek scene (`suitcase` = target pertama di RoVGameplay) oleh `SceneTargetLocator` | T3.1; posisi target milik scene, jadi tetap ikut snap ke dasar laut |
+| 2026-10-07 | `SearchScenarioTracker` (pelacak lama, Zenject, tombol Capture) TIDAK diubah dan berjalan berdampingan dengan `ScenarioRunner` baru | Aturan jangan refactor yang tidak terkait; penggabungan keduanya perlu keputusan |
+
 ## Status task
 | Task | Status | Catatan |
 |---|---|---|
@@ -53,6 +56,7 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 | T3.2 Station instruktur (layar 6) | selesai (2026-10-07) | Live: sesi/rekaman, jeda, akhiri sesi, injeksi 5 gangguan (banner HUD pilot langsung), arus/arah/visibilitas (HUD ikut), catatan, linimasa kejadian, peta jejak ROV, tampilan trainee (kamera dari ROV aktif). BELUM: efek gangguan dan lingkungan pada fisika/visual (T3.3, T2.1); target di peta |
 | T4.3 Debrief (layar 7) | selesai (2026-10-07) | Kejadian, durasi, catatan, jejak (ruas gangguan kuning), penanda di bar putar ulang, simpan laporan JSON. BELUM: skor (bobot), putar ulang (T4.2), PDF (di luar scope), rekaman persisten 20 Hz (T4.1) |
 | T3.3 Gangguan thruster | selesai (2026-10-07) | `ThrusterFaultModel` (Core): kebocoran #3 turun linear ke batas bawah, thruster mati #1 = 0; dipakai fisika (`RoVPhysics`) dan dial HUD. 48/48 tes lulus. Di Play: efisiensi heave 1.00 -> 0.70, HUD T3 9.3 -> 3.7 (kuning). Parameter `LeakFloorEfficiency` 0.4 dan `LeakDecaySeconds` 30 adalah PLACEHOLDER (menunggu RovProfile dan data nyata). Gaya fisik end-to-end tidak terukur otomatis (injeksi input Editor gagal) - perlu uji manual dengan tombol naik/turun |
+| T3.1 Skenario dan objektif | selesai (2026-10-07) | `ObjectiveDef` (ReachZone, HoldPosition, Identify), `ScenarioRunner` (berurutan, batas waktu per objektif, event `ObjectiveDone`/`ObjectiveFailed`/`ScenarioComplete`), `ScenarioDriver` di `SessionController`. Skenario "Investigasi target sonar" dari SPEC 5. Instruktur melihat baris Objektif; Debrief menampilkan "Objektif x dari y"; laporan JSON memuat jumlah objektif. 58/58 tes lulus. Di Play: 3 objektif selesai berurutan (00:03, 00:20, 00:23). Toleransi (radius 40 m; tahan 12 m / 10 dtk; kenali 10 m / 3 dtk / sudut 25 derajat) adalah PLACEHOLDER |
 | T5.1 UI (layar 5b) | ditunda | HUD Mariner XL (fase 5, di luar scope prototype) |
 
 ## Log sesi
@@ -63,7 +67,12 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 
 - 2026-10-07 (4): Station Instruktur + Debrief + `SessionLog`/`SessionReport` (Core) + 41 tes EditMode lulus. Branch `rov-sim/t3.2-instructor-debrief`.
 
+- 2026-10-07 (5): T3.3 gangguan thruster (PR #2) dan T3.1 skenario/objektif. Branch `rov-sim/t3.1-scenario-objectives`.
+
 ## Pertanyaan terbuka untuk manusia
+0c. Toleransi objektif skenario (radius zona, waktu tahan, jarak/sudut identifikasi) belum dikonfirmasi; nilai sekarang placeholder.
+0d. Setelah semua objektif selesai sesi belum berakhir otomatis (instruktur/F10 yang mengakhiri). Perlu pindah otomatis ke Debrief?
+0e. Mode Ujian (tanpa petunjuk) belum membedakan tampilan; HUD belum menampilkan objektif ke trainee.
 0. Skor Debrief: kriteria dan bobot (Navigasi, Station keeping, Penanganan gangguan, Penyelesaian misi, Waktu) belum disepakati dengan Pushidrosal; tampil `[__]`.
 0b. Batas waktu skenario "Investigasi target sonar" masih `[___]` menit (timer menampilkan `--:--`).
 0b. `TileServerStatus` memakai URL tile server yang tertulis di komponen (IP LAN); pindahkan ke `StreamingAssets/config.json` pada A0.3.

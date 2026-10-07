@@ -54,7 +54,8 @@ namespace Falah.RovSim.UI
             subtitle.text = MenuCatalog.FindRov(s.RovId).DisplayName + " · " + scenario.DisplayName + " · " + trainee;
 
             int limit = PilotHud.ParseMinutes(scenario.TimeLimit) * 60;
-            durationText.text = "Durasi " + SessionLog.FormatTime(log.Elapsed) + " dari " + (limit > 0 ? SessionLog.FormatTime(limit) : "--:--");
+            durationText.text = "Durasi " + SessionLog.FormatTime(log.Elapsed) + " dari " + (limit > 0 ? SessionLog.FormatTime(limit) : "--:--") +
+                                (log.ObjectivesTotal > 0 ? "\nObjektif " + log.ObjectivesDone + " dari " + log.ObjectivesTotal + " selesai" : string.Empty);
             noteText.text = string.IsNullOrWhiteSpace(log.InstructorNote) ? "Catatan instruktur: (tidak ada)" : "Catatan instruktur: " + log.InstructorNote;
 
             keyEvents.Show(log.Events);

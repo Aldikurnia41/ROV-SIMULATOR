@@ -5,6 +5,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Falah.RovSim.Core",
+        "Falah.RovSim.Scenario",
         "Falah.RovSim.UI"
     ],
     "includePlatforms": [

@@ -1,0 +1,16 @@
+{
+    "name": "Falah.RovSim.Scenario",
+    "rootNamespace": "Falah.RovSim.Scenario",
+    "references": [
+        "Falah.RovSim.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

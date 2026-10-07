@@ -24,6 +24,7 @@ namespace Falah.RovSim.UI
         [SerializeField] TMP_Text traineeValue;
         [SerializeField] TMP_Text modeValue;
         [SerializeField] TMP_Text recordingValue;
+        [SerializeField] TMP_Text objectiveValue;
         [SerializeField] Button pauseButton;
         [SerializeField] TMP_Text pauseLabel;
         [SerializeField] Button endButton;
@@ -96,6 +97,7 @@ namespace Falah.RovSim.UI
             var log = SessionLog.Current;
             clockElapsed.text = SessionLog.FormatTime(log.Elapsed);
             clockLimit.text = "/ " + (limitSeconds > 0f ? SessionLog.FormatTime(limitSeconds) : "--:--");
+            objectiveValue.text = string.IsNullOrEmpty(log.ObjectiveSummary) ? "-" : log.ObjectiveSummary;
             if (source != null && source.TryGetSample(out var sample)) map.Feed(sample.Position, sample.HeadingDegrees);
 
             if (environmentDirtyAt >= 0f && Time.unscaledTime - environmentDirtyAt >= EnvironmentLogDelay)
