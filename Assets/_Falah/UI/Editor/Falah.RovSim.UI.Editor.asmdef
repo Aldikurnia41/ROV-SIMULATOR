@@ -3,6 +3,7 @@
     "rootNamespace": "Falah.RovSim.UI.Editor",
     "references": [
         "Falah.RovSim.Core",
+        "Falah.RovSim.Scenario",
         "Falah.RovSim.UI",
         "UnityEngine.UI",
         "Unity.TextMeshPro",

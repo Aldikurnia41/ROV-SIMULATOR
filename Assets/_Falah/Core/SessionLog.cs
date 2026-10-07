@@ -18,6 +18,8 @@ namespace Falah.RovSim.Core
         DpEngaged,
         SessionPaused,
         SessionResumed,
+        ObjectiveFailed,
+        ScenarioComplete,
         SessionEnd,
     }
 
@@ -65,6 +67,11 @@ namespace Falah.RovSim.Core
         public float Elapsed;
         public bool Ended;
         public string InstructorNote = string.Empty;
+
+        /// <summary>Objective progress, published by the scenario runner (0 total = no scenario running).</summary>
+        public int ObjectivesTotal;
+        public int ObjectivesDone;
+        public string ObjectiveSummary = string.Empty;
 
         public event Action<SimEvent> EventAdded;
 

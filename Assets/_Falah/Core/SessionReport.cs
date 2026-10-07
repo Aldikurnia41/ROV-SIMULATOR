@@ -26,6 +26,8 @@ namespace Falah.RovSim.Core
         public float currentKnots;
         public float visibilityMeters;
         public string instructorNote;
+        public int objectivesDone;
+        public int objectivesTotal;
         public List<SimEvent> events = new List<SimEvent>();
         public int trackPoints;
 
@@ -44,6 +46,8 @@ namespace Falah.RovSim.Core
                 currentKnots = setup.CurrentKnots,
                 visibilityMeters = setup.VisibilityMeters,
                 instructorNote = log.InstructorNote,
+                objectivesDone = log.ObjectivesDone,
+                objectivesTotal = log.ObjectivesTotal,
                 events = new List<SimEvent>(log.Events),
                 trackPoints = log.Track.Count,
             };

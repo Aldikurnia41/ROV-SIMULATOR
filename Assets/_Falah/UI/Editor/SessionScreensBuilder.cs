@@ -87,6 +87,9 @@ namespace Falah.RovSim.UI.Editor
             var trainee = InfoRow(rows, "Trainee", "[Nama trainee]", UiTheme.Text, FontStyles.Bold);
             var mode = InfoRow(rows, "Mode", "Misi penuh", UiTheme.Text, FontStyles.Normal);
             var recording = InfoRow(rows, "Rekaman", "Aktif", UiTheme.Danger, FontStyles.Bold);
+            var objective = InfoRow(rows, "Objektif", "-", UiTheme.Text, FontStyles.Normal);
+            objective.textWrappingMode = TextWrappingModes.Normal;
+            UiKit.Size(objective.rectTransform, 220);
             UiKit.Spacer(session.Outer, 0, 14);
             var buttons = UiKit.Rect(session.Outer, "Buttons");
             UiKit.HGroup(buttons, 8, 0, 0, 0, 0, TextAnchor.MiddleCenter, true, false);
@@ -171,6 +174,8 @@ namespace Falah.RovSim.UI.Editor
             if (hudGo != null && adapterType != null) adapter = hudGo.GetComponent(adapterType);
             UiKit.Bind(controller, "telemetrySource", adapter);
             UiKit.Bind(controller, "instructorCanvas", go);
+            var driver = controllerGo.AddComponent<Falah.RovSim.Scenario.ScenarioDriver>();
+            UiKit.Bind(driver, "telemetrySource", adapter);
 
             UiKit.Bind(station, "session", controller);
             UiKit.Bind(station, "telemetrySource", adapter);
@@ -181,6 +186,7 @@ namespace Falah.RovSim.UI.Editor
             UiKit.Bind(station, "traineeValue", trainee);
             UiKit.Bind(station, "modeValue", mode);
             UiKit.Bind(station, "recordingValue", recording);
+            UiKit.Bind(station, "objectiveValue", objective);
             UiKit.Bind(station, "pauseButton", pause);
             UiKit.Bind(station, "pauseLabel", pause.GetComponentInChildren<TMP_Text>());
             UiKit.Bind(station, "endButton", end);
