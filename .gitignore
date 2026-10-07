@@ -1,0 +1,58 @@
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# IDE / OS
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.suo
+*.user
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.DS_Store
+Thumbs.db
+
+# Unity MCP / local tooling
+/Library/MCPForUnity/
+
+# Build outputs
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Local-only (secrets, tile cache)
+.env
+StreamingAssets/config.local.json
+
+# Test screenshots taken by tooling
+/Assets/Screenshots/
+/Assets/Screenshots.meta
+
+# Third-party / licensed assets: NOT redistributed in this repo. Import them separately (see README.md).
+/Assets/KriptoFX/
+/Assets/KriptoFX.meta
+/Assets/WaterWorks/
+/Assets/WaterWorks.meta
+/Assets/AllSkyFree/
+/Assets/AllSkyFree.meta
+/Assets/Plugins/Easy performant outline/
+/Assets/Plugins/Easy performant outline.meta
+# ROV models (Tripo-generated, license to be confirmed) and other source art
+/Assets/3D Contents/
+/Assets/3D Contents.meta
