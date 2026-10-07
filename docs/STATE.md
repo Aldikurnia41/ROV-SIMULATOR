@@ -34,6 +34,9 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 | 2026-10-07 | Cakupan prototype di UI: hanya Tortuga + Teledyne yang bisa dipilih; mode Misi penuh + Ujian; skenario Investigasi target sonar. Item lain tampil terkunci ("Fase berikut") | SPEC bagian 2-3 (desain memuat 4 ROV/4 mode/5 skenario) |
 | 2026-10-07 | Canvas menu memakai Screen Space - Camera (bukan Overlay); `PlayerSettings.runInBackground = true`; Build Settings: Menu jadi scene 0, RoVGameplay scene 1 | Agar menu bisa di-capture/diuji otomatis dan Play tetap jalan saat Editor tidak fokus |
 
+| 2026-10-07 | HUD pilot (desain 5a) ditambahkan ke `RoVGameplay` sebagai canvas baru `CanvasHUD_Pilot` (Overlay, Display 1, sorting 5). `CanvasROV/Header` dan `CanvasROV/Compass` dinonaktifkan (nilai lama: activeSelf = true) karena digantikan HUD baru; `CanvasROV/Button` (Capture, dipakai `SearchScenarioTracker`), `CanvasROV_Instrument` (+`HudBinder`) dan `CanvasInstructorOperating` TIDAK diubah | Keputusan user: sesuaikan HUD. Kembalikan dengan mengaktifkan lagi dua objek itu dan menghapus `CanvasHUD_Pilot` |
+| 2026-10-07 | Font IBM Plex Sans/Mono (OFL) diimpor ke `Assets/_Falah/UI/Fonts` dan dipakai di menu dan HUD | Keputusan user |
+
 ## Status task
 | Task | Status | Catatan |
 |---|---|---|
@@ -41,7 +44,8 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 | A0.2 | sebagian | Git diinisialisasi dan remote tersambung; commit baseline + tag + cadangan BELUM (menunggu user; repo GitHub publik, ada aset berlisensi pihak ketiga) |
 | A0.6 | sebagian | `Assets/_Falah/{Core,UI,UI/Editor,Tests/EditMode}` + asmdef; scene `Menu` di Build Settings. Belum: `Boot`/`Debrief` scene, asmdef modul lain |
 | T5.1 UI (layar 1-4) | selesai (2026-10-07) | Login, Pilih ROV, Skenario, Briefing. Alur diuji di Play: login kosong ditolak, pilihan masuk `SessionSetup`, ECA/Mariner terkunci, Mulai simulasi aktif setelah kalibrasi lalu memuat `RoVGameplay`. 9/9 tes EditMode lulus |
-| T5.1 UI (layar 5-8) | belum | HUD Tortuga, HUD Mariner XL, Station Instruktur, Debrief |
+| T1.4 HUD pilot (layar 5a) | selesai (2026-10-07) | Data nyata: kedalaman, ketinggian dari dasar (raycast), heading, pitch/roll (via `RoVTelemetryAdapter` -> `ITelemetrySource`), timer, arus (SessionSetup), banner peringatan (`PilotHud.ShowAlert`). Data contoh (tag "Data contoh"): sonar, thruster azimuth, tether, lampu, tilt kamera, mode DP. 30/30 tes EditMode lulus |
+| T5.1 UI (layar 5b-8) | belum | HUD Mariner XL (fase 5), Station Instruktur, Debrief |
 
 ## Log sesi
 - 2026-10-07 (2): git init + remote; docs disalin ke proyek; cesium_local dihapus. Sisa error: `Cannot connect api.cesium.com` (jaringan ke server Cesium tidak terjangkau dari PC ini) masih muncul pada resume sesi ion default; 404 /appData sudah hilang. Play mode Editor sempat berhenti (butuh fokus jendela Unity).
@@ -50,7 +54,6 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 - 2026-10-07 (3): GitHub: baseline `baf710a` + tag `baseline-sebelum-rov-sim` di-push ke origin/main. Branch `rov-sim/t5.1-ui-menu`: menu 4 layar + tes. Error Pause dimatikan (keputusan user).
 
 ## Pertanyaan terbuka untuk manusia
-0. Font: impor IBM Plex Sans/Mono (OFL) dan buat TMP font asset? Sekarang TMP default (Liberation Sans).
 0b. `TileServerStatus` memakai URL tile server yang tertulis di komponen (IP LAN); pindahkan ke `StreamingAssets/config.json` pada A0.3.
 0c. Lanjut ke layar 5-8 (HUD, Instruktur, Debrief): HUD lama (uGUI + `HudBinder`) sudah ada di scene RoVGameplay; apakah HUD baru menggantikannya?
 1. Commit baseline + tag + push ke GitHub: belum dilakukan (menunggu perintah user).

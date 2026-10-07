@@ -369,6 +369,77 @@ namespace Falah.RovSim.UI.Editor
             return sw;
         }
 
+        // ---------- translucent ("glass") panels for overlays ----------
+
+        /// <summary>
+        /// Panel whose fill may be translucent: the fill is one rounded sprite and the 1 px border is a separate ring
+        /// sprite on top (the Box type draws its border underneath, which would show through a translucent fill).
+        /// </summary>
+        public static Box GlassBox(Transform parent, string name, Color fill, Color border, float radius = 10f, bool raycast = false)
+        {
+            var outer = Rect(parent, name);
+            var fillImg = outer.gameObject.AddComponent<Image>();
+            fillImg.sprite = RoundedSprite((int)radius, false);
+            fillImg.type = Image.Type.Sliced;
+            fillImg.color = fill;
+            fillImg.raycastTarget = raycast;
+            var ring = Rect(outer, "Border");
+            Stretch(ring);
+            IgnoreLayout(ring);
+            var ringImg = ring.gameObject.AddComponent<Image>();
+            ringImg.sprite = RoundedSprite((int)radius, true);
+            ringImg.type = Image.Type.Sliced;
+            ringImg.color = border;
+            ringImg.raycastTarget = false;
+            return new Box { Outer = outer, FillRect = outer, Border = ringImg, Fill = fillImg };
+        }
+
+        /// <summary>White rounded-rect sprite (filled, or a 1 px ring) with crisp corners of the given radius.</summary>
+        public static Sprite RoundedSprite(int radius, bool ring)
+        {
+            string path = ArtFolder + "/round_" + (ring ? "ring_" : "fill_") + radius + ".png";
+            if (!File.Exists(path))
+            {
+                Directory.CreateDirectory(ArtFolder);
+                int size = radius * 2 + 4;
+                var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+                float half = size / 2f;
+                for (int y = 0; y < size; y++)
+                    for (int x = 0; x < size; x++)
+                    {
+                        float px = Mathf.Abs(x + 0.5f - half), py = Mathf.Abs(y + 0.5f - half);
+                        float qx = px - (half - radius), qy = py - (half - radius);
+                        float d = new Vector2(Mathf.Max(qx, 0f), Mathf.Max(qy, 0f)).magnitude + Mathf.Min(Mathf.Max(qx, qy), 0f) - radius;
+                        float fill = Mathf.Clamp01(0.5f - d);
+                        float a = ring ? fill - Mathf.Clamp01(-0.5f - d) : fill;
+                        tex.SetPixel(x, y, new Color(1f, 1f, 1f, Mathf.Clamp01(a)));
+                    }
+                File.WriteAllBytes(path, tex.EncodeToPNG());
+                Object.DestroyImmediate(tex);
+                AssetDatabase.ImportAsset(path);
+                var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
+                importer.spriteBorder = new Vector4(radius + 1, radius + 1, radius + 1, radius + 1);
+                importer.mipmapEnabled = false;
+                importer.alphaIsTransparency = true;
+                importer.filterMode = FilterMode.Bilinear;
+                importer.SaveAndReimport();
+            }
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        }
+
+        public static Image Circle(Transform parent, string name, float width, float height, Color color)
+        {
+            var r = Rect(parent, name);
+            r.sizeDelta = new Vector2(width, height);
+            var img = r.gameObject.AddComponent<Image>();
+            img.sprite = Knob;
+            img.color = color;
+            img.raycastTarget = false;
+            return img;
+        }
+
         // ---------- decorative ----------
 
         /// <summary>Simple ROV glyph (hull, lens, thruster stubs) drawn from rounded boxes.</summary>
