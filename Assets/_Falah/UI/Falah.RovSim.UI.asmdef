@@ -1,0 +1,19 @@
+{
+    "name": "Falah.RovSim.UI",
+    "rootNamespace": "Falah.RovSim.UI",
+    "references": [
+        "Falah.RovSim.Core",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

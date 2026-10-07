@@ -30,17 +30,40 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 | 2026-10-07 | Aset berlisensi dikeluarkan dari repo (`.gitignore`): KriptoFX, WaterWorks, AllSkyFree, Easy performant outline, `3D Contents` (model Tripo). Zenject (MIT) tetap di repo. README.md mencatat aset yang harus diimpor terpisah | Keputusan user; repo GitHub publik |
 | 2026-10-07 | Console Error Pause dimatikan | Keputusan user; error jaringan Cesium (`Cannot connect api.cesium.com`) tidak lagi mem-pause Play |
 
+| 2026-10-07 | Menu (Login dummy, Pilih ROV, Skenario, Briefing) dibangun dengan uGUI di scene `Assets/_Falah/Scenes/Menu.unity` oleh `Falah/UI/Build Menu Scene`; token warna dari desain; font masih TMP default (IBM Plex belum diimpor) | Keputusan user: login dummy, gaya mengikuti desain, tetap uGUI, T5.1 boleh lewat skrip |
+| 2026-10-07 | Cakupan prototype di UI: hanya Tortuga + Teledyne yang bisa dipilih; mode Misi penuh + Ujian; skenario Investigasi target sonar. Item lain tampil terkunci ("Fase berikut") | SPEC bagian 2-3 (desain memuat 4 ROV/4 mode/5 skenario) |
+| 2026-10-07 | Canvas menu memakai Screen Space - Camera (bukan Overlay); `PlayerSettings.runInBackground = true`; Build Settings: Menu jadi scene 0, RoVGameplay scene 1 | Agar menu bisa di-capture/diuji otomatis dan Play tetap jalan saat Editor tidak fokus |
+
+| 2026-10-07 | HUD pilot (desain 5a) ditambahkan ke `RoVGameplay` sebagai canvas baru `CanvasHUD_Pilot` (Overlay, Display 1, sorting 5). `CanvasROV/Header` dan `CanvasROV/Compass` dinonaktifkan (nilai lama: activeSelf = true) karena digantikan HUD baru; `CanvasROV/Button` (Capture, dipakai `SearchScenarioTracker`), `CanvasROV_Instrument` (+`HudBinder`) dan `CanvasInstructorOperating` TIDAK diubah | Keputusan user: sesuaikan HUD. Kembalikan dengan mengaktifkan lagi dua objek itu dan menghapus `CanvasHUD_Pilot` |
+| 2026-10-07 | Font IBM Plex Sans/Mono (OFL) diimpor ke `Assets/_Falah/UI/Fonts` dan dipakai di menu dan HUD | Keputusan user |
+
+| 2026-10-07 | Station Instruktur = canvas `CanvasInstructorStation` (Overlay, Display 0, sorting 10) di `RoVGameplay`; tampil otomatis bila peran Instruktur/Administrator, F2 menampilkan/menyembunyikan, F10 mengakhiri sesi. `SessionController` (objek baru) memegang jam sesi, sampling jejak 1 Hz, dan pindah ke scene `Debrief` | Keputusan agent berdasarkan SPEC (satu mesin, dua layar). Display 0 sebelumnya hanya `CanvasInstructorOperating` + kamera third person (tidak diubah) |
+| 2026-10-07 | Debrief = scene baru `Assets/_Falah/Scenes/Debrief.unity`; Build Settings: Menu, RoVGameplay, Debrief. Laporan JSON (berversi) disimpan di `Application.persistentDataPath/sessions/`. Skor tetap `[__]` (bobot belum disepakati); Ekspor PDF dan Putar ulang dikunci | SPEC bagian 2-3, BACKLOG E |
+
 ## Status task
 | Task | Status | Catatan |
 |---|---|---|
 | A0.1 | selesai (2026-10-07) | `docs/AUDIT.md` dan tabel di atas terisi. Satu pelanggaran proses dicatat (perubahan scene sebelum audit) |
 | A0.2 | sebagian | Git diinisialisasi dan remote tersambung; commit baseline + tag + cadangan BELUM (menunggu user; repo GitHub publik, ada aset berlisensi pihak ketiga) |
-| T5.1 / T1.4 / T3.2 / T4.3 (UI) | belum | Menunggu keputusan di "Pertanyaan terbuka" |
+| A0.6 | sebagian | `Assets/_Falah/{Core,UI,UI/Editor,Tests/EditMode}` + asmdef; scene `Menu` di Build Settings. Belum: `Boot`/`Debrief` scene, asmdef modul lain |
+| T5.1 UI (layar 1-4) | selesai (2026-10-07) | Login, Pilih ROV, Skenario, Briefing. Alur diuji di Play: login kosong ditolak, pilihan masuk `SessionSetup`, ECA/Mariner terkunci, Mulai simulasi aktif setelah kalibrasi lalu memuat `RoVGameplay`. 9/9 tes EditMode lulus |
+| T1.4 HUD pilot (layar 5a) | selesai (2026-10-07) | Data nyata: kedalaman, ketinggian dari dasar (raycast), heading, pitch/roll (via `RoVTelemetryAdapter` -> `ITelemetrySource`), timer, arus (SessionSetup), banner peringatan (`PilotHud.ShowAlert`). Data contoh (tag "Data contoh"): sonar, thruster azimuth, tether, lampu, tilt kamera, mode DP. 30/30 tes EditMode lulus |
+| T3.2 Station instruktur (layar 6) | selesai (2026-10-07) | Live: sesi/rekaman, jeda, akhiri sesi, injeksi 5 gangguan (banner HUD pilot langsung), arus/arah/visibilitas (HUD ikut), catatan, linimasa kejadian, peta jejak ROV, tampilan trainee (kamera dari ROV aktif). BELUM: efek gangguan dan lingkungan pada fisika/visual (T3.3, T2.1); target di peta |
+| T4.3 Debrief (layar 7) | selesai (2026-10-07) | Kejadian, durasi, catatan, jejak (ruas gangguan kuning), penanda di bar putar ulang, simpan laporan JSON. BELUM: skor (bobot), putar ulang (T4.2), PDF (di luar scope), rekaman persisten 20 Hz (T4.1) |
+| T5.1 UI (layar 5b) | ditunda | HUD Mariner XL (fase 5, di luar scope prototype) |
 
 ## Log sesi
 - 2026-10-07 (2): git init + remote; docs disalin ke proyek; cesium_local dihapus. Sisa error: `Cannot connect api.cesium.com` (jaringan ke server Cesium tidak terjangkau dari PC ini) masih muncul pada resume sesi ion default; 404 /appData sudah hilang. Play mode Editor sempat berhenti (butuh fokus jendela Unity).
 - 2026-10-07: A0.1 audit dikerjakan. Desain UI di artifact "ROV Trainer Pushidrosal: Desain UI" dibaca (8 layar: Login, Pilih ROV, Mode/Skenario/Lingkungan, Briefing, HUD Tortuga, HUD Mariner XL, Instruktur, Debrief). Belum ada kode UI.
 
+- 2026-10-07 (3): GitHub: baseline `baf710a` + tag `baseline-sebelum-rov-sim` di-push ke origin/main. Branch `rov-sim/t5.1-ui-menu`: menu 4 layar + tes. Error Pause dimatikan (keputusan user).
+
+- 2026-10-07 (4): Station Instruktur + Debrief + `SessionLog`/`SessionReport` (Core) + 41 tes EditMode lulus. Branch `rov-sim/t3.2-instructor-debrief`.
+
 ## Pertanyaan terbuka untuk manusia
+0. Skor Debrief: kriteria dan bobot (Navigasi, Station keeping, Penanganan gangguan, Penyelesaian misi, Waktu) belum disepakati dengan Pushidrosal; tampil `[__]`.
+0b. Batas waktu skenario "Investigasi target sonar" masih `[___]` menit (timer menampilkan `--:--`).
+0b. `TileServerStatus` memakai URL tile server yang tertulis di komponen (IP LAN); pindahkan ke `StreamingAssets/config.json` pada A0.3.
+0c. Lanjut ke layar 5-8 (HUD, Instruktur, Debrief): HUD lama (uGUI + `HudBinder`) sudah ada di scene RoVGameplay; apakah HUD baru menggantikannya?
 1. Commit baseline + tag + push ke GitHub: belum dilakukan (menunggu perintah user).
 2. Konfirmasi lisensi model Tripo (`3D Contents`) sebelum dimasukkan ke repo.
