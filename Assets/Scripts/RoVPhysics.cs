@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Falah.RovSim.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -63,16 +64,16 @@ public class RoVPhysics : MonoBehaviour
         {
             if(Rbd.transform.position.y < 0.0f)
             {
-                Rbd.AddForce(transform.up * PropForce);
-                Thrusters[2].Rpm = 600;
-                Thrusters[3].Rpm = 600;
+                Rbd.AddForce(transform.up * PropForce * HeaveEfficiency);
+                Thrusters[2].Rpm = 600 * ThrusterEfficiency(2);
+                Thrusters[3].Rpm = 600 * ThrusterEfficiency(3);
             }
         }
         else if (Down.IsPressed())
         {
-            Rbd.AddForce(transform.up * -PropForce);
-            Thrusters[2].Rpm = -600;
-            Thrusters[3].Rpm = -600;
+            Rbd.AddForce(transform.up * -PropForce * HeaveEfficiency);
+            Thrusters[2].Rpm = -600 * ThrusterEfficiency(2);
+            Thrusters[3].Rpm = -600 * ThrusterEfficiency(3);
         }
         else
         {
@@ -89,15 +90,15 @@ public class RoVPhysics : MonoBehaviour
             Rbd.AddTorque(Vector3.up*PropForce*0.1f);
         }
         if (Forward.IsPressed()) {
-            Rbd.AddForce(transform.forward * 4.0f * -PropForce); //It has 4 props}
-            Thrusters[0].Rpm = 600;
-            Thrusters[1].Rpm = -600;
+            Rbd.AddForce(transform.forward * 4.0f * -PropForce * SurgeEfficiency); //It has 4 props}
+            Thrusters[0].Rpm = 600 * ThrusterEfficiency(0);
+            Thrusters[1].Rpm = -600 * ThrusterEfficiency(1);
         }
         else if (Backward.IsPressed())
         {
-            Rbd.AddForce(transform.forward * 4.0f * PropForce);
-            Thrusters[0].Rpm = -600;
-            Thrusters[1].Rpm = 600;
+            Rbd.AddForce(transform.forward * 4.0f * PropForce * SurgeEfficiency);
+            Thrusters[0].Rpm = -600 * ThrusterEfficiency(0);
+            Thrusters[1].Rpm = 600 * ThrusterEfficiency(1);
         }
         else
         {
@@ -157,6 +158,13 @@ public class RoVPhysics : MonoBehaviour
 
         rb.AddForceAtPosition(worldForce, worldPoint, ForceMode.Force);
     }
+
+    // Thruster faults injected by the instructor (Falah.RovSim.Core.ThrusterFaultModel). Thrusters 0-1 drive surge,
+    // 2-3 drive heave (see the Thrusters comment above); sway is not tied to a thruster yet.
+    public float SurgeEfficiency => ThrusterFaultModel.Pair(SessionLog.Current, 0, 1);
+    public float HeaveEfficiency => ThrusterFaultModel.Pair(SessionLog.Current, 2, 3);
+
+    private static float ThrusterEfficiency(int index) => ThrusterFaultModel.Efficiency(index, SessionLog.Current);
 
     void EnableGravity(bool value)
     {

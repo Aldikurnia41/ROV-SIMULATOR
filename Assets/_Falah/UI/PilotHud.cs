@@ -37,14 +37,15 @@ namespace Falah.RovSim.UI
         [SerializeField] TMP_Text current;
         [SerializeField] TMP_Text tether;
 
-        [Header("Thrusters (sample data)")]
+        [Header("Thrusters (nominal values are sample data; efficiency under faults is live)")]
         [SerializeField] RectTransform[] needles;
         [SerializeField] Graphic[] rings;
         [SerializeField] TMP_Text[] thrustValues;
         [SerializeField] TMP_Text[] thrusterLabels;
-        [SerializeField] float[] sampleThrustKgf = { 9.4f, 9.1f, 6.2f, 9.3f };
+        [SerializeField] float[] sampleThrustKgf = { 9.4f, 9.1f, 9.3f, 9.3f };
         [SerializeField] float[] sampleNeedleDegrees = { 30f, 62f, 30f, 28f };
-        [SerializeField] int faultyThruster = 2;
+        [Tooltip("Efficiency below this shows the thruster in the warning colour.")]
+        [SerializeField] float faultThreshold = 0.95f;
 
         [Header("Light and camera tilt (sample data)")]
         [SerializeField] TMP_Text lightValue;
@@ -95,6 +96,7 @@ namespace Falah.RovSim.UI
         {
             timerElapsed.text = Clock(SessionLog.Current.Elapsed);
             timerLimit.text = "/ " + (limitSeconds > 0f ? Clock(limitSeconds) : "--:--");
+            UpdateThrusters();
             var setup = SessionSetup.Current;
             current.text = Format(setup.CurrentKnots, "0.0") + " kn <size=65%><color=#93A7C2>" +
                            Format(setup.CurrentDirectionDegrees, "000") + "°" + UnitEnd;
@@ -148,13 +150,21 @@ namespace Falah.RovSim.UI
         void ApplySampleThrusters()
         {
             for (int i = 0; i < needles.Length; i++)
-            {
-                bool fault = i == faultyThruster;
-                Color c = fault ? UiTheme.Warn : UiTheme.Accent;
                 needles[i].localEulerAngles = new Vector3(0f, 0f, -sampleNeedleDegrees[i]);
-                needles[i].GetComponent<Graphic>().color = c;
+            UpdateThrusters();
+        }
+
+        /// <summary>Thrust shown = nominal sample x live efficiency from injected faults.</summary>
+        void UpdateThrusters()
+        {
+            var log = SessionLog.Current;
+            for (int i = 0; i < needles.Length; i++)
+            {
+                float efficiency = ThrusterFaultModel.Efficiency(i, log);
+                bool fault = efficiency < faultThreshold;
+                needles[i].GetComponent<Graphic>().color = fault ? UiTheme.Warn : UiTheme.Accent;
                 rings[i].color = fault ? UiTheme.Warn : UiTheme.BorderStrong;
-                thrustValues[i].text = Format(sampleThrustKgf[i], "0.0");
+                thrustValues[i].text = Format(sampleThrustKgf[i] * efficiency, "0.0");
                 thrustValues[i].color = fault ? UiTheme.Warn : UiTheme.Text;
                 thrusterLabels[i].color = fault ? UiTheme.Warn : UiTheme.TextMuted;
             }

@@ -54,11 +54,12 @@ namespace Falah.RovSim.Core
 
         readonly List<SimEvent> events = new List<SimEvent>();
         readonly List<TrackPoint> track = new List<TrackPoint>();
-        readonly HashSet<DisturbanceKind> active = new HashSet<DisturbanceKind>();
+        /// <summary>Active disturbances and the session time they started.</summary>
+        readonly Dictionary<DisturbanceKind, float> active = new Dictionary<DisturbanceKind, float>();
 
         public IReadOnlyList<SimEvent> Events => events;
         public IReadOnlyList<TrackPoint> Track => track;
-        public IReadOnlyCollection<DisturbanceKind> ActiveDisturbances => active;
+        public IReadOnlyCollection<DisturbanceKind> ActiveDisturbances => active.Keys;
 
         /// <summary>Simulation seconds since the session started (stops while paused).</summary>
         public float Elapsed;
@@ -86,7 +87,10 @@ namespace Falah.RovSim.Core
             track.Add(new TrackPoint { Time = Elapsed, X = position.x, Y = position.y, Z = position.z });
         }
 
-        public bool IsActive(DisturbanceKind kind) => active.Contains(kind);
+        public bool IsActive(DisturbanceKind kind) => active.ContainsKey(kind);
+
+        /// <summary>Session time at which the disturbance was injected.</summary>
+        public bool TryGetActiveSince(DisturbanceKind kind, out float since) => active.TryGetValue(kind, out since);
 
         /// <summary>Starts the disturbance, or stops it when it is already active. Returns true when it is now active.</summary>
         public bool ToggleDisturbance(DisturbanceKind kind)
@@ -97,7 +101,7 @@ namespace Falah.RovSim.Core
                 Add(SimEventType.DisturbanceCleared, "Instruktur: " + info.Label.ToLowerInvariant() + " dihentikan", EventSeverity.Info);
                 return false;
             }
-            active.Add(kind);
+            active[kind] = Elapsed;
             Add(info.EventType, "Instruktur: " + info.Injected, EventSeverity.Warning, info.PilotAlert);
             return true;
         }
@@ -112,10 +116,23 @@ namespace Falah.RovSim.Core
 
     public enum DisturbanceKind { ThrusterLeak, ThrusterDead, LightsOut, TetherSnag, CommsLoss }
 
+    public enum FaultBehavior
+    {
+        /// <summary>Not a thruster fault.</summary>
+        None,
+        /// <summary>Thrust efficiency falls gradually to a floor (leak).</summary>
+        GradualLoss,
+        /// <summary>No thrust at all.</summary>
+        Dead,
+    }
+
     public sealed class DisturbanceInfo
     {
         public DisturbanceKind Kind;
         public SimEventType EventType;
+        /// <summary>Zero-based thruster the fault applies to; -1 when it is not a thruster fault.</summary>
+        public int ThrusterIndex = -1;
+        public FaultBehavior Behavior = FaultBehavior.None;
         public string Label;
         /// <summary>Event text for the instructor timeline and debrief.</summary>
         public string Injected;
@@ -128,8 +145,10 @@ namespace Falah.RovSim.Core
         public static readonly DisturbanceInfo[] All =
         {
             new DisturbanceInfo { Kind = DisturbanceKind.ThrusterLeak, EventType = SimEventType.ThrusterFault, Label = "Kebocoran thruster",
+                ThrusterIndex = 2, Behavior = FaultBehavior.GradualLoss,
                 Injected = "kebocoran thruster #3 diinjeksi", PilotAlert = "Kebocoran kecil terdeteksi, thruster #3" },
             new DisturbanceInfo { Kind = DisturbanceKind.ThrusterDead, EventType = SimEventType.ThrusterFault, Label = "Thruster mati",
+                ThrusterIndex = 0, Behavior = FaultBehavior.Dead,
                 Injected = "thruster mati diinjeksi", PilotAlert = "Thruster tidak merespons" },
             new DisturbanceInfo { Kind = DisturbanceKind.LightsOut, EventType = SimEventType.DisturbanceInjected, Label = "Lampu padam",
                 Injected = "lampu padam diinjeksi", PilotAlert = "Lampu ROV padam" },

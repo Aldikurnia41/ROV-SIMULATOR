@@ -40,6 +40,8 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 | 2026-10-07 | Station Instruktur = canvas `CanvasInstructorStation` (Overlay, Display 0, sorting 10) di `RoVGameplay`; tampil otomatis bila peran Instruktur/Administrator, F2 menampilkan/menyembunyikan, F10 mengakhiri sesi. `SessionController` (objek baru) memegang jam sesi, sampling jejak 1 Hz, dan pindah ke scene `Debrief` | Keputusan agent berdasarkan SPEC (satu mesin, dua layar). Display 0 sebelumnya hanya `CanvasInstructorOperating` + kamera third person (tidak diubah) |
 | 2026-10-07 | Debrief = scene baru `Assets/_Falah/Scenes/Debrief.unity`; Build Settings: Menu, RoVGameplay, Debrief. Laporan JSON (berversi) disimpan di `Application.persistentDataPath/sessions/`. Skor tetap `[__]` (bobot belum disepakati); Ekspor PDF dan Putar ulang dikunci | SPEC bagian 2-3, BACKLOG E |
 
+| 2026-10-07 | `Assets/Scripts/RoVPhysics.cs` (skrip proyek lama) diubah minimal untuk T3.3: `using Falah.RovSim.Core`, gaya naik/turun dikali `HeaveEfficiency`, gaya maju/mundur dikali `SurgeEfficiency`, RPM propeller dikali efisiensi tiap thruster; 2 properti + 1 helper ditambahkan. Perilaku tanpa gangguan identik (efisiensi = 1) | T3.3 butuh pengait ke gaya thruster; `ThrusterModel` (T1.2) belum ada. Pemetaan thruster mengikuti komentar di kode: 0-1 surge, 2-3 heave; sway belum terikat thruster |
+
 ## Status task
 | Task | Status | Catatan |
 |---|---|---|
@@ -50,6 +52,7 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 | T1.4 HUD pilot (layar 5a) | selesai (2026-10-07) | Data nyata: kedalaman, ketinggian dari dasar (raycast), heading, pitch/roll (via `RoVTelemetryAdapter` -> `ITelemetrySource`), timer, arus (SessionSetup), banner peringatan (`PilotHud.ShowAlert`). Data contoh (tag "Data contoh"): sonar, thruster azimuth, tether, lampu, tilt kamera, mode DP. 30/30 tes EditMode lulus |
 | T3.2 Station instruktur (layar 6) | selesai (2026-10-07) | Live: sesi/rekaman, jeda, akhiri sesi, injeksi 5 gangguan (banner HUD pilot langsung), arus/arah/visibilitas (HUD ikut), catatan, linimasa kejadian, peta jejak ROV, tampilan trainee (kamera dari ROV aktif). BELUM: efek gangguan dan lingkungan pada fisika/visual (T3.3, T2.1); target di peta |
 | T4.3 Debrief (layar 7) | selesai (2026-10-07) | Kejadian, durasi, catatan, jejak (ruas gangguan kuning), penanda di bar putar ulang, simpan laporan JSON. BELUM: skor (bobot), putar ulang (T4.2), PDF (di luar scope), rekaman persisten 20 Hz (T4.1) |
+| T3.3 Gangguan thruster | selesai (2026-10-07) | `ThrusterFaultModel` (Core): kebocoran #3 turun linear ke batas bawah, thruster mati #1 = 0; dipakai fisika (`RoVPhysics`) dan dial HUD. 48/48 tes lulus. Di Play: efisiensi heave 1.00 -> 0.70, HUD T3 9.3 -> 3.7 (kuning). Parameter `LeakFloorEfficiency` 0.4 dan `LeakDecaySeconds` 30 adalah PLACEHOLDER (menunggu RovProfile dan data nyata). Gaya fisik end-to-end tidak terukur otomatis (injeksi input Editor gagal) - perlu uji manual dengan tombol naik/turun |
 | T5.1 UI (layar 5b) | ditunda | HUD Mariner XL (fase 5, di luar scope prototype) |
 
 ## Log sesi
