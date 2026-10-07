@@ -405,7 +405,8 @@ namespace Falah.RovSim.UI.Editor
                 UiKit.HGroup(r, 8, 0, 0, 0, 0, TextAnchor.MiddleLeft);
                 UiKit.Text(r, row.Label, 14f, UiTheme.TextMuted, FontStyles.Normal, TextAlignmentOptions.MidlineLeft, 0f, false);
                 UiKit.Spacer(r);
-                UiKit.Text(r, row.Value, 14f, UiTheme.TextPale, FontStyles.Normal, TextAlignmentOptions.MidlineRight, 0f, false);
+                var value = UiKit.Text(r, row.Value, 14f, UiTheme.TextPale, FontStyles.Normal, TextAlignmentOptions.MidlineRight, 0f, false);
+                if (row.Mono) UiKit.Mono(value);
             }
             return UiKit.MakeChoice(box, rov.Id, rov.Selectable, 1f, 2f, badge.Outer.gameObject);
         }
@@ -633,7 +634,7 @@ namespace Falah.RovSim.UI.Editor
             UiKit.Size(cell, 0, -1, 1);
             UiKit.VGroup(cell, 4);
             UiKit.Text(cell, label, 13f, UiTheme.TextMuted);
-            return UiKit.Text(cell, value, 18f, UiTheme.Text, FontStyles.Normal);
+            return UiKit.Mono(UiKit.Text(cell, value, 18f, UiTheme.Text, FontStyles.Normal));
         }
     }
 }

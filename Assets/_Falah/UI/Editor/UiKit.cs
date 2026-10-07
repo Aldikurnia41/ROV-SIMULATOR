@@ -174,15 +174,24 @@ namespace Falah.RovSim.UI.Editor
         {
             var r = Rect(parent, "Text");
             var t = r.gameObject.AddComponent<TextMeshProUGUI>();
+            t.font = UiFonts.Sans(style);
             t.text = text;
             t.fontSize = size;
             t.color = color;
-            t.fontStyle = style;
+            // The semibold face replaces synthetic bold; keep other style flags (italic).
+            t.fontStyle = style & ~FontStyles.Bold;
             t.alignment = align;
             t.characterSpacing = spacing;
             t.textWrappingMode = wrap ? TextWrappingModes.Normal : TextWrappingModes.NoWrap;
             t.raycastTarget = false;
             return t;
+        }
+
+        /// <summary>Fixed-width numerals (telemetry, specs, timers).</summary>
+        public static TMP_Text Mono(TMP_Text text)
+        {
+            text.font = UiFonts.Mono();
+            return text;
         }
 
         // ---------- buttons ----------
@@ -208,7 +217,8 @@ namespace Falah.RovSim.UI.Editor
             var box = MakeBox(parent, "Button", UiTheme.Accent, UiTheme.Accent, 0f, 8f);
             VGroup(box.Outer, 0, padH, 0, padH, 0, TextAnchor.MiddleCenter);
             Size(box.Outer, -1, height);
-            Text(box.Outer, label, size, UiTheme.OnAccent, FontStyles.Bold, TextAlignmentOptions.Center, 0f, false);
+            var text = Text(box.Outer, label, size, UiTheme.OnAccent, FontStyles.Bold, TextAlignmentOptions.Center, 0f, false);
+            text.font = UiFonts.SansBold();
             return MakeButton(box.Outer.gameObject, box.Fill);
         }
 
@@ -299,6 +309,7 @@ namespace Falah.RovSim.UI.Editor
             Text(top, label, 14f, UiTheme.TextSoft, FontStyles.Normal, TextAlignmentOptions.MidlineLeft, 0f, false);
             Spacer(top);
             var valueText = Text(top, string.Empty, 14f, UiTheme.Text, FontStyles.Normal, TextAlignmentOptions.MidlineRight, 0f, false);
+            Mono(valueText);
 
             var sr = Rect(row, "Slider");
             Size(sr, -1, 18);
