@@ -232,6 +232,15 @@ namespace Falah.RovSim.UI.Editor
             return MakeButton(box.Outer.gameObject, box.Border);
         }
 
+        public static Button OutlineButton(Transform parent, string label, float height, float size, Color border, Color textColor, Color background, int padH = 28)
+        {
+            var box = MakeBox(parent, "Button", background, border, 1f, 8f);
+            VGroup(box.Outer, 0, padH, 0, padH, 0, TextAnchor.MiddleCenter);
+            Size(box.Outer, -1, height);
+            Text(box.Outer, label, size, textColor, FontStyles.Normal, TextAlignmentOptions.Center, 0f, false);
+            return MakeButton(box.Outer.gameObject, box.Fill);
+        }
+
         // ---------- choice cards ----------
 
         /// <summary>Makes <paramref name="box"/> a selectable card wired to a <see cref="Choice"/>.</summary>
@@ -272,18 +281,20 @@ namespace Falah.RovSim.UI.Editor
 
         // ---------- input field ----------
 
-        public static TMP_InputField InputField(Transform parent, string placeholder, bool password)
+        public static TMP_InputField InputField(Transform parent, string placeholder, bool password, float height = 52f, bool multiline = false,
+            float fontSize = 16f, Color? fill = null)
         {
-            var box = MakeBox(parent, "InputField", UiTheme.Input, UiTheme.BorderStrong, 1f, 8f);
-            Size(box.Outer, -1, 52);
+            var box = MakeBox(parent, "InputField", fill ?? UiTheme.Input, UiTheme.BorderStrong, 1f, 8f);
+            Size(box.Outer, -1, height);
             var area = Rect(box.Outer, "Text Area");
-            Stretch(area, 16, 4, 16, 4);
+            Stretch(area, 16, multiline ? 10 : 4, 16, multiline ? 10 : 4);
             IgnoreLayout(area);
             area.gameObject.AddComponent<RectMask2D>();
-            var ph = Text(area, placeholder, 16f, UiTheme.TextDim, FontStyles.Italic, TextAlignmentOptions.MidlineLeft, 0f, false);
+            var align = multiline ? TextAlignmentOptions.TopLeft : TextAlignmentOptions.MidlineLeft;
+            var ph = Text(area, placeholder, fontSize, UiTheme.TextDim, FontStyles.Italic, align, 0f, !multiline ? false : true);
             ph.name = "Placeholder";
             Stretch(ph.rectTransform);
-            var txt = Text(area, string.Empty, 16f, UiTheme.Text, FontStyles.Normal, TextAlignmentOptions.MidlineLeft, 0f, false);
+            var txt = Text(area, string.Empty, fontSize, UiTheme.Text, FontStyles.Normal, align, 0f, multiline);
             txt.name = "Text";
             Stretch(txt.rectTransform);
             var field = box.Outer.gameObject.AddComponent<TMP_InputField>();
@@ -293,7 +304,7 @@ namespace Falah.RovSim.UI.Editor
             field.placeholder = ph;
             field.caretColor = UiTheme.Accent;
             field.selectionColor = new Color(UiTheme.Accent.r, UiTheme.Accent.g, UiTheme.Accent.b, 0.35f);
-            field.lineType = TMP_InputField.LineType.SingleLine;
+            field.lineType = multiline ? TMP_InputField.LineType.MultiLineNewline : TMP_InputField.LineType.SingleLine;
             if (password) field.contentType = TMP_InputField.ContentType.Password;
             return field;
         }

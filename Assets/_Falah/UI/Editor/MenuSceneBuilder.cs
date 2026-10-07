@@ -52,7 +52,7 @@ namespace Falah.RovSim.UI.Editor
 
         // ---------- scene scaffolding ----------
 
-        static Camera CreateCamera()
+        internal static Camera CreateCamera()
         {
             var go = new GameObject("Main Camera") { tag = "MainCamera" };
             var cam = go.AddComponent<Camera>();
@@ -62,14 +62,14 @@ namespace Falah.RovSim.UI.Editor
             return cam;
         }
 
-        static void CreateEventSystem()
+        internal static void CreateEventSystem()
         {
             var go = new GameObject("EventSystem", typeof(EventSystem));
             var module = go.AddComponent<InputSystemUIInputModule>();
             if (module.actionsAsset == null) module.AssignDefaultActions();
         }
 
-        static RectTransform CreateCanvas(Camera camera)
+        internal static RectTransform CreateCanvas(Camera camera)
         {
             var go = new GameObject("Canvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvas = go.GetComponent<Canvas>();
@@ -85,18 +85,23 @@ namespace Falah.RovSim.UI.Editor
             return (RectTransform)go.transform;
         }
 
-        static void EnsureBuildSettings()
+        internal const string DebriefScenePath = "Assets/_Falah/Scenes/Debrief.unity";
+
+        /// <summary>Build order: Menu, RoVGameplay, Debrief; any other scene already listed keeps its place after them.</summary>
+        internal static void EnsureBuildSettings()
         {
-            var list = EditorBuildSettings.scenes.Where(s => s.path != ScenePath).ToList();
-            if (!list.Any(s => s.path == SimulationScenePath) && File.Exists(SimulationScenePath))
-                list.Add(new EditorBuildSettingsScene(SimulationScenePath, true));
-            list.Insert(0, new EditorBuildSettingsScene(ScenePath, true));
+            var ordered = new[] { ScenePath, SimulationScenePath, DebriefScenePath };
+            var list = new System.Collections.Generic.List<EditorBuildSettingsScene>();
+            foreach (var path in ordered)
+                if (File.Exists(path))
+                    list.Add(new EditorBuildSettingsScene(path, EditorBuildSettings.scenes.FirstOrDefault(s => s.path == path)?.enabled ?? true));
+            list.AddRange(EditorBuildSettings.scenes.Where(s => !ordered.Contains(s.path)));
             EditorBuildSettings.scenes = list.ToArray();
         }
 
         // ---------- shared chrome ----------
 
-        static RectTransform NewScreen(Transform canvas, string name)
+        internal static RectTransform NewScreen(Transform canvas, string name)
         {
             var r = UiKit.Rect(canvas, name);
             UiKit.Stretch(r);
@@ -212,7 +217,7 @@ namespace Falah.RovSim.UI.Editor
             UiKit.Bind(screen, "header", header);
         }
 
-        static TMP_Text SectionLabel(Transform parent, string text) =>
+        internal static TMP_Text SectionLabel(Transform parent, string text) =>
             UiKit.Text(parent, text, 13f, UiTheme.TextMuted, FontStyles.Bold, TextAlignmentOptions.TopLeft, 10f, false);
 
         // ---------- 1. Login ----------

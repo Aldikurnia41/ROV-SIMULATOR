@@ -33,12 +33,18 @@ namespace Falah.RovSim.Core
         public string ScenarioId = DefaultScenarioId;
         public string LocationLabel = DefaultLocation;
         public float CurrentKnots = 1.5f;
+        public float CurrentDirectionDegrees = 45f;
         public float VisibilityMeters = 4f;
         public float TargetDepthMeters = 32f;
         public TimeOfDay TimeOfDay = TimeOfDay.Day;
         public DisturbanceFlags Disturbances = new DisturbanceFlags();
         public bool GamepadCalibrated;
 
+        /// <summary>Raised when the instructor changes current or visibility during the session.</summary>
+        public static event System.Action EnvironmentChanged;
+
         public static void ResetCurrent() => Current = new SessionSetup();
+
+        public void NotifyEnvironmentChanged() => EnvironmentChanged?.Invoke();
     }
 }

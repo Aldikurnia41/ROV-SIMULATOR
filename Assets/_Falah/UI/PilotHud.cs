@@ -56,7 +56,6 @@ namespace Falah.RovSim.UI
         const string UnitEnd = "</color></size>";
 
         ITelemetrySource source;
-        float elapsed;
         float limitSeconds = -1f;
 
         void Awake()
@@ -64,16 +63,26 @@ namespace Falah.RovSim.UI
             source = telemetrySource as ITelemetrySource;
         }
 
+        void OnDisable()
+        {
+            SessionLog.EventRaised -= OnSessionEvent;
+        }
+
+        void OnSessionEvent(SimEvent e)
+        {
+            if (!string.IsNullOrEmpty(e.PilotAlert)) ShowAlert(e.PilotAlert);
+            else if (e.Type == SimEventType.DisturbanceCleared) HideAlert();
+        }
+
         void OnEnable()
         {
-            elapsed = 0f;
+            SessionLog.EventRaised += OnSessionEvent;
             var s = SessionSetup.Current;
             var rov = MenuCatalog.FindRov(s.RovId);
             var scenario = MenuCatalog.FindScenario(s.ScenarioId);
             rovName.text = rov.DisplayName.ToUpperInvariant();
             scenarioName.text = scenario.DisplayName;
             limitSeconds = ParseMinutes(scenario.TimeLimit) * 60f;
-            current.text = Format(s.CurrentKnots, "0.0") + " kn <size=65%><color=#93A7C2>[___]" + UnitEnd;
             tether.text = "[___] m";
             if (alertRoot != null) alertRoot.SetActive(false);
             if (sampleDataTag != null) sampleDataTag.SetActive(true);
@@ -84,9 +93,11 @@ namespace Falah.RovSim.UI
 
         void Update()
         {
-            elapsed += Time.deltaTime;
-            timerElapsed.text = Clock(elapsed);
+            timerElapsed.text = Clock(SessionLog.Current.Elapsed);
             timerLimit.text = "/ " + (limitSeconds > 0f ? Clock(limitSeconds) : "--:--");
+            var setup = SessionSetup.Current;
+            current.text = Format(setup.CurrentKnots, "0.0") + " kn <size=65%><color=#93A7C2>" +
+                           Format(setup.CurrentDirectionDegrees, "000") + "°" + UnitEnd;
             if (recDot != null) recDot.enabled = Mathf.FloorToInt(Time.unscaledTime * 1.5f) % 2 == 0;
 
             if (source != null && source.TryGetSample(out var t))
@@ -159,11 +170,7 @@ namespace Falah.RovSim.UI
         static string Format(float value, string format) => value.ToString(format, CultureInfo.InvariantCulture);
 
         /// <summary>mm:ss for a duration in seconds.</summary>
-        public static string Clock(float seconds)
-        {
-            int total = Mathf.Max(0, Mathf.FloorToInt(seconds));
-            return (total / 60).ToString("00", CultureInfo.InvariantCulture) + ":" + (total % 60).ToString("00", CultureInfo.InvariantCulture);
-        }
+        public static string Clock(float seconds) => SessionLog.FormatTime(seconds);
 
         /// <summary>Leading integer of strings like "45 menit"; 0 when there is none (e.g. "[___] menit").</summary>
         public static int ParseMinutes(string text)

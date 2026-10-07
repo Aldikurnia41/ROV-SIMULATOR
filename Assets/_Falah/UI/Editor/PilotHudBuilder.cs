@@ -348,11 +348,13 @@ namespace Falah.RovSim.UI.Editor
         // ---------- review capture ----------
 
         /// <summary>Renders the HUD over a dark-blue backdrop to a 1600x900 PNG (works in edit and Play mode).</summary>
-        public static string Capture(string path)
+        public static string Capture(string path, string canvasName = null)
         {
-            var go = GameObject.Find(CanvasName);
-            if (go == null) return "no " + CanvasName + " in the open scene";
+            canvasName = canvasName ?? CanvasName;
+            var go = GameObject.Find(canvasName);
+            if (go == null) return "no " + canvasName + " in the open scene";
             var canvas = go.GetComponent<Canvas>();
+            int prevDisplay = canvas.targetDisplay;
             var camGo = new GameObject("HudCaptureCamera");
             var cam = camGo.AddComponent<Camera>();
             cam.clearFlags = CameraClearFlags.SolidColor;
@@ -370,6 +372,9 @@ namespace Falah.RovSim.UI.Editor
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)go.transform);
             Canvas.ForceUpdateCanvases();
+            // Pixel-positioned content (track dots) redraws in LateUpdate; run it for the capture size.
+            foreach (var map in go.GetComponentsInChildren<TrackMap>(true))
+                typeof(TrackMap).GetMethod("LateUpdate", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)?.Invoke(map, null);
             cam.Render();
             var tex = new Texture2D(1600, 900, TextureFormat.RGB24, false);
             var active = RenderTexture.active;
@@ -382,7 +387,7 @@ namespace Falah.RovSim.UI.Editor
             RenderTexture.ReleaseTemporary(rt);
             canvas.renderMode = prevMode;
             canvas.worldCamera = prevCamera;
-            canvas.targetDisplay = 1;
+            canvas.targetDisplay = prevDisplay;
             Object.DestroyImmediate(camGo);
             return path;
         }
