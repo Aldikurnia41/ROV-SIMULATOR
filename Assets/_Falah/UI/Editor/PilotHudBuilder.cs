@@ -58,6 +58,11 @@ namespace Falah.RovSim.UI.Editor
             BuildBottomCenter(root);
             BuildBottomRight(root, hud);
 
+            // Live sonar when the scene ROV has a scanner (found by type name: it lives in Assembly-CSharp).
+            var scannerType = System.Type.GetType("Falah.RovSim.Integration.SonarScanner, Assembly-CSharp");
+            var scanner = scannerType != null ? Object.FindFirstObjectByType(scannerType) as MonoBehaviour : null;
+            report.AppendLine(AttachSonar(go, scanner));
+
             // Hide only what the new HUD replaces; record the old state so it can be restored.
             var legacy = GameObject.Find(LegacyCanvas);
             if (legacy != null)
@@ -200,7 +205,7 @@ namespace Falah.RovSim.UI.Editor
             UiKit.HGroup(header, 0, 0, 0, 0, 0, TextAnchor.MiddleLeft);
             Label(header, "SONAR IMAGING");
             UiKit.Spacer(header);
-            UiKit.Mono(UiKit.Text(header, "20 m", 11f, UiTheme.TextMuted, FontStyles.Normal, TextAlignmentOptions.MidlineRight, 0f, false));
+            UiKit.Mono(UiKit.Text(header, "-- m", 11f, UiTheme.TextMuted, FontStyles.Normal, TextAlignmentOptions.MidlineRight, 0f, false)).name = "SonarRange";
             var area = UiKit.Rect(sonar.Outer, "Area");
             UiKit.Size(area, -1, 200);
             var areaImg = area.gameObject.AddComponent<Image>();
@@ -343,6 +348,30 @@ namespace Falah.RovSim.UI.Editor
             fill = UiKit.Rect(track, "Fill");
             UiKit.Stretch(fill);
             UiKit.Img(fill, fillColor, 3f);
+        }
+
+        // ---------- sonar ----------
+
+        /// <summary>
+        /// Replaces the static sonar drawing of the HUD with a live <see cref="SonarDisplay"/> fed by
+        /// <paramref name="sonarSource"/> (an <see cref="ISonarSource"/>). Works on an existing HUD, so the objects that
+        /// reference other parts of the canvas keep their references.
+        /// </summary>
+        public static string AttachSonar(GameObject hudCanvas, MonoBehaviour sonarSource)
+        {
+            var area = hudCanvas.transform.Find("RightStack/Sonar/Area");
+            if (area == null) return "Sonar area not found in " + hudCanvas.name;
+            for (int i = area.childCount - 1; i >= 0; i--) Object.DestroyImmediate(area.GetChild(i).gameObject);
+
+            var go = UiKit.Rect(area, "SonarImage");
+            UiKit.Stretch(go);
+            var raw = go.gameObject.AddComponent<UnityEngine.UI.RawImage>();
+            raw.raycastTarget = false;
+            var display = go.gameObject.AddComponent<SonarDisplay>();
+            UiKit.Bind(display, "sonarSource", sonarSource);
+            var label = hudCanvas.transform.Find("RightStack/Sonar/Header/SonarRange");
+            if (label != null) UiKit.Bind(display, "rangeLabel", label.GetComponent<TMP_Text>());
+            return "sonar display attached" + (sonarSource != null ? " (source " + sonarSource.GetType().Name + ")" : " (no source yet)");
         }
 
         // ---------- review capture ----------

@@ -42,6 +42,9 @@ namespace Falah.RovSim.Core
         [Header("Camera")]
         public RovCameraSettings Camera = new RovCameraSettings();
 
+        [Header("Sonar")]
+        public SonarSettings Sonar = new SonarSettings();
+
         [Header("Station keeping")]
         public PidGains HeadingPid = new PidGains(2f, 0.2f, 1.5f, 20f, 60f);
         public PidGains DepthPid = new PidGains(120f, 40f, 160f, 200f, 300f);
@@ -150,6 +153,15 @@ namespace Falah.RovSim.Core
                 if (p.Camera.FieldOfView < 10f || p.Camera.FieldOfView > 150f) Error("Camera field of view must be between 10 and 150 degrees");
                 if (p.Camera.MinTilt > p.Camera.MaxTilt) Error("Camera MinTilt is above MaxTilt");
                 else if (p.Camera.DefaultTilt < p.Camera.MinTilt || p.Camera.DefaultTilt > p.Camera.MaxTilt) Error("Camera DefaultTilt is outside the tilt range");
+            }
+
+            if (p.Sonar == null) Error("Sonar settings missing");
+            else
+            {
+                if (p.Sonar.RangeMeters <= 0f) Error("Sonar range must be greater than zero");
+                if (p.Sonar.SectorDegrees <= 0f || p.Sonar.SectorDegrees > 360f) Error("Sonar sector must be between 0 and 360 degrees");
+                if (p.Sonar.BeamCount < 2) Error("Sonar needs at least 2 beams");
+                if (p.Sonar.UpdateHz <= 0f) Error("Sonar update rate must be greater than zero");
             }
 
             CheckPid("Heading PID", p.HeadingPid, Error);
