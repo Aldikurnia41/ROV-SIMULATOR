@@ -148,7 +148,7 @@ namespace Falah.RovSim.Core
                 {
                     "Menuju area pencarian dan dekati kontak sonar.",
                     "Identifikasi black box secara visual (nyalakan lampu: L).",
-                    "Catat posisi black box (Enter).",
+                    "Catat posisi black box (M).",
                     "Kembali ke permukaan.",
                 },
             },

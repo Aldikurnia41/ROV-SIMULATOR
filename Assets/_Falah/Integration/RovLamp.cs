@@ -5,8 +5,8 @@ using UnityEngine.InputSystem;
 namespace Falah.RovSim.Integration
 {
     /// <summary>
-    /// Operator controls that are not thrust: lamp (L on/off, PageUp/PageDown brightness; gamepad button west toggles)
-    /// and the position mark (Enter; gamepad button north). Keeps a spot light on the active vehicle in step with
+    /// Operator controls that are not thrust: lamp (L on/off, T/G brighter/dimmer; gamepad button west toggles)
+    /// and the position mark (M; gamepad button north). Keeps a spot light on the active vehicle in step with
     /// <see cref="LampState"/> and mirrors the instructor's "Lampu padam" switch into it.
     /// </summary>
     public sealed class RovLamp : MonoBehaviour
@@ -31,12 +31,12 @@ namespace Falah.RovSim.Integration
             var state = LampState.Current;
             var keyboard = Keyboard.current;
             var pad = Gamepad.current;
-            OperatorMark.Pressed = (keyboard != null && keyboard.enterKey.wasPressedThisFrame) || (pad != null && pad.buttonNorth.wasPressedThisFrame);
+            OperatorMark.Pressed = (keyboard != null && keyboard.mKey.wasPressedThisFrame) || (pad != null && pad.buttonNorth.wasPressedThisFrame);
             if ((keyboard != null && keyboard.lKey.wasPressedThisFrame) || (pad != null && pad.buttonWest.wasPressedThisFrame)) state.Toggle();
             if (keyboard != null)
             {
-                if (keyboard.pageUpKey.wasPressedThisFrame) state.Step(1);
-                if (keyboard.pageDownKey.wasPressedThisFrame) state.Step(-1);
+                if (keyboard.tKey.wasPressedThisFrame) state.Step(1);
+                if (keyboard.gKey.wasPressedThisFrame) state.Step(-1);
             }
 
             bool lightsOut = SessionSetup.Current.Disturbances.LightsOut;

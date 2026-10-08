@@ -123,7 +123,7 @@ namespace Falah.RovSim.Scenario
                 new ObjectiveDef
                 {
                     Id = "mark", Type = ObjectiveType.MarkPosition, TargetName = BlackBoxTarget,
-                    Description = "Catat posisi black box (tekan Enter)", Radius = 8f,
+                    Description = "Catat posisi black box (tekan M)", Radius = 8f,
                 },
                 new ObjectiveDef
                 {
