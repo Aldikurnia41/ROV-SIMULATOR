@@ -45,6 +45,8 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 | 2026-10-07 | Modul `Assets/_Falah/Scenario` (asmdef `Falah.RovSim.Scenario`, refs Core). `ScenarioDef`/`ObjectiveDef` berupa kelas C# biasa (bukan ScriptableObject) dan skenario dasar didefinisikan di `ScenarioLibrary`; jadikan ScriptableObject bila perlu diedit di Inspector. Target dicari lewat nama objek scene (`suitcase` = target pertama di RoVGameplay) oleh `SceneTargetLocator` | T3.1; posisi target milik scene, jadi tetap ikut snap ke dasar laut |
 | 2026-10-07 | `SearchScenarioTracker` (pelacak lama, Zenject, tombol Capture) TIDAK diubah dan berjalan berdampingan dengan `ScenarioRunner` baru | Aturan jangan refactor yang tidak terkait; penggabungan keduanya perlu keputusan |
 
+| 2026-10-08 | `ThrusterModel` (Core, kelas murni) + `ThrusterLayouts` + `RovThrusterDriver` (Integration, `AddForceAtPosition`). Driver BELUM dipasang di ROV scene: `RoVPhysics` tetap menggerakkan Hytech; pemasangan/pemetaan input = T1.3 | T1.2; menghindari dua sistem gaya ganda pada satu Rigidbody |
+
 ## Status task
 | Task | Status | Catatan |
 |---|---|---|
@@ -57,6 +59,7 @@ Diperbarui di akhir setiap sesi Claude Code. Jangan dihapus; tambahkan baris bar
 | T4.3 Debrief (layar 7) | selesai (2026-10-07) | Kejadian, durasi, catatan, jejak (ruas gangguan kuning), penanda di bar putar ulang, simpan laporan JSON. BELUM: skor (bobot), putar ulang (T4.2), PDF (di luar scope), rekaman persisten 20 Hz (T4.1) |
 | T3.3 Gangguan thruster | selesai (2026-10-07) | `ThrusterFaultModel` (Core): kebocoran #3 turun linear ke batas bawah, thruster mati #1 = 0; dipakai fisika (`RoVPhysics`) dan dial HUD. 48/48 tes lulus. Di Play: efisiensi heave 1.00 -> 0.70, HUD T3 9.3 -> 3.7 (kuning). Parameter `LeakFloorEfficiency` 0.4 dan `LeakDecaySeconds` 30 adalah PLACEHOLDER (menunggu RovProfile dan data nyata). Gaya fisik end-to-end tidak terukur otomatis (injeksi input Editor gagal) - perlu uji manual dengan tombol naik/turun |
 | T3.1 Skenario dan objektif | selesai (2026-10-07) | `ObjectiveDef` (ReachZone, HoldPosition, Identify), `ScenarioRunner` (berurutan, batas waktu per objektif, event `ObjectiveDone`/`ObjectiveFailed`/`ScenarioComplete`), `ScenarioDriver` di `SessionController`. Skenario "Investigasi target sonar" dari SPEC 5. Instruktur melihat baris Objektif; Debrief menampilkan "Objektif x dari y"; laporan JSON memuat jumlah objektif. 58/58 tes lulus. Di Play: 3 objektif selesai berurutan (00:03, 00:20, 00:23). Toleransi (radius 40 m; tahan 12 m / 10 dtk; kenali 10 m / 3 dtk / sudut 25 derajat) adalah PLACEHOLDER |
+| T1.2 Thruster dan alokasi | selesai (2026-10-08) | Alokasi pseudo-inverse teredam (6-DOF), saturasi proporsional (arah wrench terjaga), respons orde pertama, efisiensi/mati dari `ThrusterFaultModel` (thruster mati dikeluarkan dari alokasi, sisanya mengompensasi). Tes per sumbu (surge, sway, heave, yaw) untuk Tortuga dan Teledyne, saturasi, thruster mati, respons: 79/79 tes lulus. Play: tiap perintah satu sumbu menggerakkan hanya sumbu itu untuk kedua profil. Geometri/gaya layout = PLACEHOLDER (Tortuga: 3 horizontal + 1 vertikal; Teledyne: 4 vektor + 2 vertikal) sampai RovProfile (T0.4) dan data resmi |
 | T5.1 UI (layar 5b) | ditunda | HUD Mariner XL (fase 5, di luar scope prototype) |
 
 ## Log sesi
