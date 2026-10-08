@@ -9,6 +9,9 @@ public class RoVPhysics : MonoBehaviour
     public float PropForce;
     [Tooltip("Keyboard-driven forces of the original prototype. Turn off when a RovThrusterDriver drives this body.")]
     public bool UseLegacyInput = true;
+
+    /// <summary>Current and visibility of the water; set by WaterEnvironmentDriver. Null means still water.</summary>
+    public static IWaterEnvironment Water;
     public InputAction Forward, Backward, Left, Right, Up, Down;
 
     public InputAction TiltLeft, TiltRight, TiltUp, TiltDown;
@@ -124,8 +127,9 @@ public class RoVPhysics : MonoBehaviour
 
     private void ApplyQuadraticDrag()
     {
-        // 1. Linear Quadratic Drag
-        Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity);
+        // 1. Linear Quadratic Drag, on the velocity relative to the water (the current carries a free ROV along)
+        Vector3 current = Water != null ? Water.CurrentAt(rb.position, Time.time) : Vector3.zero;
+        Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity - current);
         Vector3 localDragForce = -0.5f * waterDensity * new Vector3(
             linearDragCoefficients.x * localVel.x * Mathf.Abs(localVel.x),
             linearDragCoefficients.y * localVel.y * Mathf.Abs(localVel.y),
