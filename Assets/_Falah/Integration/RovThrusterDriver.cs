@@ -27,6 +27,9 @@ namespace Falah.RovSim.Integration
         /// <summary>x = sway, y = heave, z = surge, w = yaw; each -1..1.</summary>
         public Vector4 Command;
 
+        /// <summary>Extra wrench in the thruster frame (newtons, N·m) added to the operator's, e.g. from station keeping.</summary>
+        public Wrench AssistWrench;
+
         public ThrusterModel Model => model;
 
         public void SetLayout(string id)
@@ -49,8 +52,8 @@ namespace Falah.RovSim.Integration
 
             var cmd = new Vector4(Mathf.Clamp(Command.x, -1f, 1f), Mathf.Clamp(Command.y, -1f, 1f), Mathf.Clamp(Command.z, -1f, 1f), Mathf.Clamp(Command.w, -1f, 1f));
             var wrench = new Wrench(
-                new Vector3(cmd.x * fullForce.x, cmd.y * fullForce.y, cmd.z * fullForce.z),
-                new Vector3(0f, cmd.w * fullYawTorque, 0f));
+                new Vector3(cmd.x * fullForce.x, cmd.y * fullForce.y, cmd.z * fullForce.z) + AssistWrench.Force,
+                new Vector3(0f, cmd.w * fullYawTorque, 0f) + AssistWrench.Torque);
             model.Step(wrench, efficiency, Time.fixedDeltaTime);
 
             Quaternion frame = Quaternion.Euler(0f, bodyYaw, 0f);

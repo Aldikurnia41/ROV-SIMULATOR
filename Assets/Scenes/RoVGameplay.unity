@@ -2549,6 +2549,7 @@ GameObject:
   - component: {fileID: 183191529}
   - component: {fileID: 183191528}
   - component: {fileID: 183191530}
+  - component: {fileID: 183191531}
   m_Layer: 0
   m_Name: Hytech
   m_TagString: Untagged
@@ -2790,6 +2791,24 @@ MonoBehaviour:
   hud: {fileID: 508137294}
   orbitDistance: 8
   orbitHeight: 1
+--- !u!114 &183191531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183191523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 967fe8e20463b444b89cefd7c0e18a7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  driver: {fileID: 183191529}
+  telemetrySource: {fileID: 508137295}
+  tuning: {fileID: 11400000, guid: b3ea7c4f61cd93e4fb95bdbb11420d71, type: 2}
+  holdChip: {fileID: 1158184976}
+  depthChip: {fileID: 972277462}
+  headingChip: {fileID: 412666296}
 --- !u!1 &184107504
 GameObject:
   m_ObjectHideFlags: 0

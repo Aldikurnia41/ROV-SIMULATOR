@@ -21,6 +21,7 @@ namespace Falah.RovSim.Core
         ObjectiveFailed,
         ScenarioComplete,
         SessionEnd,
+        DpReleased,
     }
 
     public enum EventSeverity { Info, Success, Warning, Critical }
