@@ -5,15 +5,12 @@ using UnityEngine;
 namespace Falah.RovSim.UI.Editor
 {
     /// <summary>
-    /// Falah/DP Tuning: edit the PID gains of one ROV in a <see cref="DpTuning"/> asset and preview the step response on
-    /// a one-degree-of-freedom plant (mass, drag, constant current) before trying them in Play mode.
+    /// Falah/DP Tuning: edit the PID gains of a <see cref="RovProfile"/> and preview the step response on a
+    /// one-degree-of-freedom plant (mass, drag, constant current) before trying them in Play mode.
     /// </summary>
     public sealed class DpTuningWindow : EditorWindow
     {
-        const string DefaultAssetPath = "Assets/_Falah/Rov/DpTuning.asset";
-
-        DpTuning asset;
-        int rovIndex;
+        RovProfile profile;
         int loop;                 // 0 heading, 1 depth, 2 position
         DpPlant plant = DpPlant.SceneRov();
         float step = 5f;
@@ -26,26 +23,20 @@ namespace Falah.RovSim.UI.Editor
 
         void OnEnable()
         {
-            if (asset == null) asset = AssetDatabase.LoadAssetAtPath<DpTuning>(DefaultAssetPath);
+            if (profile == null) profile = Selection.activeObject as RovProfile ?? Resources.Load<RovProfile>(RovProfiles.ResourceFolder + SessionSetup.DefaultRovId);
         }
 
         void OnGUI()
         {
-            asset = (DpTuning)EditorGUILayout.ObjectField("Tuning asset", asset, typeof(DpTuning), false);
-            if (asset == null || asset.Sets == null || asset.Sets.Length == 0)
+            profile = (RovProfile)EditorGUILayout.ObjectField("ROV profile", profile, typeof(RovProfile), false);
+            if (profile == null)
             {
-                EditorGUILayout.HelpBox("Pick or create a DpTuning asset (Create > Falah > DP Tuning).", MessageType.Info);
+                EditorGUILayout.HelpBox("Pick a ROV profile (Falah > ROV > Create Default Profiles makes Tortuga and Teledyne).", MessageType.Info);
                 return;
             }
 
-            var names = new string[asset.Sets.Length];
-            for (int i = 0; i < names.Length; i++) names[i] = asset.Sets[i].RovId;
-            rovIndex = Mathf.Clamp(rovIndex, 0, names.Length - 1);
-            rovIndex = EditorGUILayout.Popup("ROV", rovIndex, names);
             loop = GUILayout.Toolbar(loop, LoopNames);
-
-            var set = asset.Sets[rovIndex];
-            PidGains gains = loop == 0 ? set.Heading : loop == 1 ? set.Depth : set.Position;
+            PidGains gains = loop == 0 ? profile.HeadingPid : loop == 1 ? profile.DepthPid : profile.PositionPid;
 
             EditorGUI.BeginChangeCheck();
             gains.Kp = EditorGUILayout.FloatField("Kp", gains.Kp);
@@ -55,14 +46,14 @@ namespace Falah.RovSim.UI.Editor
             gains.OutputLimit = EditorGUILayout.FloatField("Output limit", gains.OutputLimit);
             if (EditorGUI.EndChangeCheck())
             {
-                Undo.RecordObject(asset, "Edit DP gains");
-                if (loop == 0) set.Heading = gains; else if (loop == 1) set.Depth = gains; else set.Position = gains;
-                asset.Sets[rovIndex] = set;
-                EditorUtility.SetDirty(asset);
+                Undo.RecordObject(profile, "Edit DP gains");
+                if (loop == 0) profile.HeadingPid = gains; else if (loop == 1) profile.DepthPid = gains; else profile.PositionPid = gains;
+                EditorUtility.SetDirty(profile);
             }
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Preview plant", EditorStyles.boldLabel);
+            if (GUILayout.Button("Use mass of this profile (" + profile.Mass + " kg)")) plant.Mass = profile.Mass;
             plant.Mass = EditorGUILayout.FloatField("Mass / inertia", plant.Mass);
             plant.LinearDrag = EditorGUILayout.FloatField("Linear drag", plant.LinearDrag);
             plant.QuadraticDrag = EditorGUILayout.FloatField("Quadratic drag", plant.QuadraticDrag);

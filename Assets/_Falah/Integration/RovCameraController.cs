@@ -57,7 +57,7 @@ namespace Falah.RovSim.Integration
 
         void Start()
         {
-            settings = RovCameraSettings.For(SessionSetup.Current.RovId);
+            settings = RovProfiles.Get(SessionSetup.Current.RovId).Camera;
             tiltDegrees = settings.DefaultTilt;
             if (pilotCamera != null) pilotCamera.fieldOfView = settings.FieldOfView;
             ApplyTilt();

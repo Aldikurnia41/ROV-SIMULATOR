@@ -3,6 +3,7 @@ using UnityEngine;
 namespace Falah.RovSim.Core
 {
     /// <summary>Pilot camera of a ROV. PLACEHOLDER values until RovProfile (T0.4) carries the real camera data.</summary>
+    [System.Serializable]
     public sealed class RovCameraSettings
     {
         public float FieldOfView = 60f;
