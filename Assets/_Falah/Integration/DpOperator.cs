@@ -8,14 +8,13 @@ namespace Falah.RovSim.Integration
     /// <summary>
     /// Station keeping on the scene ROV: engages the DP loops from the HUD chips (DP HOLD, AUTO DEPTH, AUTO HDG) or from
     /// the keys C, X and Z, reads the vehicle state from telemetry and the Rigidbody, and gives the result to
-    /// <see cref="RovThrusterDriver.AssistWrench"/>. Gains come from a <see cref="DpTuning"/> asset (defaults when unset).
+    /// <see cref="RovThrusterDriver.AssistWrench"/>. Gains come from the ROV profile (HeadingPid, DepthPid, PositionPid).
     /// </summary>
     [RequireComponent(typeof(Rigidbody))]
     public sealed class DpOperator : MonoBehaviour
     {
         [SerializeField] RovThrusterDriver driver;
         [SerializeField] MonoBehaviour telemetrySource;
-        [SerializeField] DpTuning tuning;
         [SerializeField] ModeChip holdChip;
         [SerializeField] ModeChip depthChip;
         [SerializeField] ModeChip headingChip;
@@ -31,8 +30,8 @@ namespace Falah.RovSim.Integration
         {
             body = GetComponent<Rigidbody>();
             source = telemetrySource as ITelemetrySource;
-            var set = (tuning != null ? tuning.For(SessionSetup.Current.RovId) : DpTuning.Defaults(SessionSetup.Current.RovId));
-            dp = new DpController(set.Heading, set.Depth, set.Position);
+            var profile = RovProfiles.Get(SessionSetup.Current.RovId);
+            dp = new DpController(profile.HeadingPid, profile.DepthPid, profile.PositionPid);
 
             hold = new InputAction("DpHold", InputActionType.Button, "<Keyboard>/c");
             depth = new InputAction("DpDepth", InputActionType.Button, "<Keyboard>/x");

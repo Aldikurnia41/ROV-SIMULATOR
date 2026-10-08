@@ -2550,6 +2550,7 @@ GameObject:
   - component: {fileID: 183191528}
   - component: {fileID: 183191530}
   - component: {fileID: 183191531}
+  - component: {fileID: 183191532}
   m_Layer: 0
   m_Name: Hytech
   m_TagString: Untagged
@@ -2770,8 +2771,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rovId: tortuga
-  fullForce: {x: 200, y: 200, z: 300}
-  fullYawTorque: 60
   bodyYaw: 180
   Command: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &183191530
@@ -2805,10 +2804,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   driver: {fileID: 183191529}
   telemetrySource: {fileID: 508137295}
-  tuning: {fileID: 11400000, guid: b3ea7c4f61cd93e4fb95bdbb11420d71, type: 2}
   holdChip: {fileID: 1158184976}
   depthChip: {fileID: 972277462}
   headingChip: {fileID: 412666296}
+--- !u!114 &183191532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183191523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4936d21ec711a5f4591b6ef824d32472, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &184107504
 GameObject:
   m_ObjectHideFlags: 0

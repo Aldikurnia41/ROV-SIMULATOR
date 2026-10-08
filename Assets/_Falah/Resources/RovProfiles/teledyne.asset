@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb6d08b8cf67be43826741796cd8f7a, type: 3}
+  m_Name: teledyne
+  m_EditorClassIdentifier: 
+  Id: teledyne
+  DisplayName: Teledyne
+  Class: 0
+  Status: 0
+  Mass: 25
+  Volume: 0.0025
+  CenterOfBuoyancyOffset: {x: 0, y: 0.2, z: 0}
+  LinearDrag: {x: 1.2, y: 1.5, z: 0.4}
+  AngularDrag: {x: 0.8, y: 0.8, z: 0.8}
+  AddedMassFactor: {x: 0.5, y: 0.8, z: 0.2}
+  Thrusters:
+  - Name: H1 front left
+    Position: {x: -0.2, y: 0, z: 0.25}
+    Direction: {x: 0.7071, y: 0, z: 0.7071}
+    MaxForward: 300
+    MaxReverse: 250
+    ResponseTime: 0.25
+  - Name: H2 front right
+    Position: {x: 0.2, y: 0, z: 0.25}
+    Direction: {x: -0.7071, y: 0, z: 0.7071}
+    MaxForward: 300
+    MaxReverse: 250
+    ResponseTime: 0.25
+  - Name: H3 rear left
+    Position: {x: -0.2, y: 0, z: -0.25}
+    Direction: {x: -0.7071, y: 0, z: 0.7071}
+    MaxForward: 300
+    MaxReverse: 250
+    ResponseTime: 0.25
+  - Name: H4 rear right
+    Position: {x: 0.2, y: 0, z: -0.25}
+    Direction: {x: 0.7071, y: 0, z: 0.7071}
+    MaxForward: 300
+    MaxReverse: 250
+    ResponseTime: 0.25
+  - Name: V1 left
+    Position: {x: -0.15, y: 0, z: 0}
+    Direction: {x: 0, y: 1, z: 0}
+    MaxForward: 300
+    MaxReverse: 250
+    ResponseTime: 0.25
+  - Name: V2 right
+    Position: {x: 0.15, y: 0, z: 0}
+    Direction: {x: 0, y: 1, z: 0}
+    MaxForward: 300
+    MaxReverse: 250
+    ResponseTime: 0.25
+  FullForce: {x: 200, y: 200, z: 300}
+  FullYawTorque: 60
+  Camera:
+    FieldOfView: 70
+    DefaultTilt: 0
+    MinTilt: -45
+    MaxTilt: 45
+    TiltRate: 35
+  HeadingPid:
+    Kp: 2
+    Ki: 0.2
+    Kd: 1.5
+    IntegralLimit: 20
+    OutputLimit: 60
+  DepthPid:
+    Kp: 120
+    Ki: 40
+    Kd: 160
+    IntegralLimit: 200
+    OutputLimit: 300
+  PositionPid:
+    Kp: 150
+    Ki: 10
+    Kd: 40
+    IntegralLimit: 60
+    OutputLimit: 200
+  MaxDepth: 300
+  MaxSpeed: 1.5

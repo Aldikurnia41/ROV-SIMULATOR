@@ -121,7 +121,9 @@ public class RoVPhysics : MonoBehaviour
         else
         {
             Vector3 cbWorldPosition = transform.TransformPoint(centerOfBuoyancyOffset);
-            rb.AddForceAtPosition(Vector3.up * _buoyancyMgt, cbWorldPosition, ForceMode.Force);
+            // computed here (not cached in Awake) so a ROV profile applied after Awake takes effect
+            float buoyancy = waterDensity * displacedVolume * Mathf.Abs(Physics.gravity.y);
+            rb.AddForceAtPosition(Vector3.up * buoyancy, cbWorldPosition, ForceMode.Force);
         }
     }
 

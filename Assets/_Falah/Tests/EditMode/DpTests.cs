@@ -198,12 +198,13 @@ namespace Falah.RovSim.Tests.EditMode
         }
 
         [Test]
-        public void Tuning_FallsBackToDefaultsForUnknownRov()
+        public void DefaultProfileGains_AreTheDpDefaults()
         {
-            var t = ScriptableObject.CreateInstance<DpTuning>();
-            Assert.AreEqual("tortuga", t.For("tortuga").RovId);
-            Assert.AreEqual("xyz", t.For("xyz").RovId);
-            Object.DestroyImmediate(t);
+            var p = RovProfile.CreateDefault("tortuga");
+            var d = DpTuning.Defaults("tortuga");
+            Assert.AreEqual(d.Position.Kp, p.PositionPid.Kp);
+            Assert.AreEqual(d.Heading.Kd, p.HeadingPid.Kd);
+            Assert.AreEqual(d.Depth.OutputLimit, p.DepthPid.OutputLimit);
         }
     }
 }
