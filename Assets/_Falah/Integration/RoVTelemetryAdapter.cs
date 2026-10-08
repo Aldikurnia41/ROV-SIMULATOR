@@ -14,6 +14,8 @@ namespace Falah.RovSim.Integration
         [SerializeField] LayerMask seabedMask = ~0;
         [SerializeField] float maxAltitude = 500f;
         [SerializeField] float searchInterval = 1f;
+        [Tooltip("Yaw of the vehicle's front relative to its transform; 180 when the model faces -Z (the scene ROV does).")]
+        [SerializeField] float bodyYaw;
 
         static readonly RaycastHit[] Hits = new RaycastHit[8];
 
@@ -37,7 +39,7 @@ namespace Falah.RovSim.Integration
                 return false;
             }
             var t = rov.transform;
-            sample = TelemetryMath.FromPose(Time.time, t.position, t.rotation, seaLevelY, Altitude(t));
+            sample = TelemetryMath.FromPose(Time.time, t.position, t.rotation * Quaternion.Euler(0f, bodyYaw, 0f), seaLevelY, Altitude(t));
             return true;
         }
 
