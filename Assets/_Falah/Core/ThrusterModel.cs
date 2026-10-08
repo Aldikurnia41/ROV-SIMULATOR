@@ -86,9 +86,7 @@ namespace Falah.RovSim.Core
                 commanded[i] = 0f;
             }
 
-            double[] w = { wrench.Force.x, wrench.Force.y, wrench.Force.z, wrench.Torque.x, wrench.Torque.y, wrench.Torque.z };
-
-            // M = B Bᵀ + λI over the active thrusters
+            // M = B Bᵀ + λI over the active thrusters (the same for every wrench)
             var m = new double[6, 6];
             for (int r = 0; r < 6; r++)
                 for (int c = 0; c < 6; c++)
@@ -98,31 +96,51 @@ namespace Falah.RovSim.Core
                     m[r, c] = sum;
                 }
 
-            double[] y = Solve(m, w);
-            if (y == null) return;
+            // Returns the largest thrust/limit ratio of the allocation of w (>1 = a thruster would saturate).
+            Func<double[], float> allocate = w =>
+            {
+                double[] y = Solve(m, w);
+                if (y == null) return 0f;
+                float worst = 0f;
+                for (int i = 0; i < n; i++)
+                {
+                    commanded[i] = 0f;
+                    if (!active[i]) continue;
+                    double t = 0.0;
+                    for (int r = 0; r < 6; r++) t += columns[r, i] * y[r];
+                    commanded[i] = (float)t;
+                    float limit = (commanded[i] >= 0f ? defs[i].MaxForward : defs[i].MaxReverse) * Mathf.Clamp01(Eff(efficiency, i));
+                    if (limit <= 0f) { if (Mathf.Abs(commanded[i]) > 0f) worst = float.PositiveInfinity; continue; }
+                    worst = Mathf.Max(worst, Mathf.Abs(commanded[i]) / limit);
+                }
+                return worst;
+            };
 
-            for (int i = 0; i < n; i++)
+            double[] demand = { wrench.Force.x, wrench.Force.y, wrench.Force.z, wrench.Torque.x, wrench.Torque.y, wrench.Torque.z };
+            if (allocate(demand) <= 1f) return;
+
+            // Saturated. Heave and yaw outrank horizontal translation (a ROV that cannot hold position must still hold
+            // depth and heading), so first shrink only the horizontal force, keeping its direction: bisect the largest
+            // scale that fits. If even zero horizontal force does not fit, scale everything proportionally.
+            double lo = 0.0, hi = 1.0;
+            double[] trial = (double[])demand.Clone();
+            trial[0] = 0.0; trial[2] = 0.0;
+            if (allocate(trial) <= 1f)
             {
-                if (!active[i]) continue;
-                double t = 0.0;
-                for (int r = 0; r < 6; r++) t += columns[r, i] * y[r];
-                commanded[i] = (float)t;
+                for (int iter = 0; iter < 24; iter++)
+                {
+                    double mid = 0.5 * (lo + hi);
+                    trial[0] = demand[0] * mid; trial[2] = demand[2] * mid;
+                    if (allocate(trial) <= 1f) lo = mid; else hi = mid;
+                }
+                trial[0] = demand[0] * lo; trial[2] = demand[2] * lo;
+                allocate(trial);
+                return;
             }
 
-            // proportional saturation
-            float worst = 1f;
-            for (int i = 0; i < n; i++)
-            {
-                if (!active[i]) continue;
-                float limit = (commanded[i] >= 0f ? defs[i].MaxForward : defs[i].MaxReverse) * Mathf.Clamp01(Eff(efficiency, i));
-                if (limit <= 0f) { if (Mathf.Abs(commanded[i]) > 0f) worst = float.PositiveInfinity; continue; }
-                worst = Mathf.Max(worst, Mathf.Abs(commanded[i]) / limit);
-            }
-            if (worst > 1f)
-            {
-                float k = float.IsInfinity(worst) ? 0f : 1f / worst;
-                for (int i = 0; i < n; i++) commanded[i] *= k;
-            }
+            float worstAll = allocate(demand);
+            float k = float.IsInfinity(worstAll) ? 0f : 1f / worstAll;
+            for (int i = 0; i < n; i++) commanded[i] *= k;
         }
 
         /// <summary>Allocates the wrench and advances the thrust response by <paramref name="deltaTime"/>.</summary>

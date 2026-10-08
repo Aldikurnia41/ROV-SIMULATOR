@@ -87,11 +87,31 @@ namespace Falah.RovSim.Tests.EditMode
 
         [TestCase("tortuga")]
         [TestCase("teledyne")]
-        public void Saturation_StaysWithinLimits_AndKeepsDirection(string rov)
+        public void HorizontalSaturation_KeepsHeaveAndYaw_AndTheHorizontalDirection(string rov)
         {
             var m = new ThrusterModel(ThrusterLayouts.For(rov));
-            // a combined demand far beyond the limits
-            var demand = new Wrench(new Vector3(500f, 0, 1000f), new Vector3(0, 100f, 0));
+            var demand = new Wrench(new Vector3(800f, 40f, 1600f), new Vector3(0, 5f, 0));
+            var t = Allocate(m, demand);
+            for (int i = 0; i < t.Length; i++)
+            {
+                Assert.LessOrEqual(t[i], m.Def(i).MaxForward + 1e-3f);
+                Assert.GreaterOrEqual(t[i], -m.Def(i).MaxReverse - 1e-3f);
+            }
+            var a = m.Achieved(t);
+            Assert.AreEqual(40f, a.Force.y, 0.1f, "heave is not starved by horizontal saturation");
+            Assert.AreEqual(5f, a.Torque.y, 0.1f, "yaw is not starved either");
+            Assert.Less(a.Force.z, 1600f);
+            Assert.Greater(a.Force.z, 0f);
+            Assert.AreEqual(0.5f, a.Force.x / a.Force.z, 0.01f, "the horizontal direction is preserved");
+        }
+
+        [TestCase("tortuga")]
+        [TestCase("teledyne")]
+        public void FullSaturation_StaysWithinLimits_AndKeepsDirection(string rov)
+        {
+            var m = new ThrusterModel(ThrusterLayouts.For(rov));
+            // a combined demand far beyond the limits, on every axis
+            var demand = new Wrench(new Vector3(500f, 0, 1000f), new Vector3(0, 1000f, 0));
             var t = Allocate(m, demand);
             for (int i = 0; i < t.Length; i++)
             {
@@ -102,7 +122,7 @@ namespace Falah.RovSim.Tests.EditMode
             var a = m.Achieved(t);
             // direction preserved: achieved wrench is parallel to the demand (cosine ~ 1)
             var got = new[] { a.Force.x, a.Force.y, a.Force.z, a.Torque.x, a.Torque.y, a.Torque.z };
-            var want = new[] { 500f, 0f, 1000f, 0f, 100f, 0f };
+            var want = new[] { 500f, 0f, 1000f, 0f, 1000f, 0f };
             float dot = 0f, g2 = 0f, w2 = 0f;
             for (int i = 0; i < 6; i++) { dot += got[i] * want[i]; g2 += got[i] * got[i]; w2 += want[i] * want[i]; }
             Assert.Greater(dot / Mathf.Sqrt(g2 * w2), 0.9999f);

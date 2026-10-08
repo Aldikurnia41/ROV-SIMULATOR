@@ -1,4 +1,5 @@
 using CesiumForUnity;
+using Falah.RovSim.Core;
 using Unity.Mathematics;
 using UnityEngine;
 using Zenject;
@@ -118,6 +119,10 @@ public class UnderwaterEffect : MonoBehaviour
         
         // 4. Increase Fog Density with Depth (Simulating suspended particles/murkiness)
         float depthFactor = Mathf.Clamp01(depth / maxFogDepth);
-        RenderSettings.fogDensity = Mathf.Lerp(surfaceFogDensity, deepFogDensity, depthFactor);
+        float fogDensity = Mathf.Lerp(surfaceFogDensity, deepFogDensity, depthFactor);
+        // Visibility chosen by the instructor (WaterEnvironment) decides the fog once the camera is under water.
+        if (RoVPhysics.Water != null && CameraDepth > 0f)
+            fogDensity = WaterEnvironment.FogDensityFor(RoVPhysics.Water.VisibilityAt(CameraDepth));
+        RenderSettings.fogDensity = fogDensity;
     }
 }
