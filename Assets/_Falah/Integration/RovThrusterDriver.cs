@@ -17,6 +17,8 @@ namespace Falah.RovSim.Integration
         [SerializeField] Vector3 fullForce = new Vector3(60f, 60f, 100f);
         [Tooltip("Yaw torque at full command, N*m (PLACEHOLDER).")]
         [SerializeField] float fullYawTorque = 15f;
+        [Tooltip("Yaw of the thruster frame relative to the transform; 180 when the model faces -Z (the scene ROV does).")]
+        [SerializeField] float bodyYaw;
 
         Rigidbody body;
         ThrusterModel model;
@@ -51,12 +53,13 @@ namespace Falah.RovSim.Integration
                 new Vector3(0f, cmd.w * fullYawTorque, 0f));
             model.Step(wrench, efficiency, Time.fixedDeltaTime);
 
+            Quaternion frame = Quaternion.Euler(0f, bodyYaw, 0f);
             for (int i = 0; i < model.Count; i++)
             {
                 float thrust = model.Thrust[i];
                 if (thrust == 0f) continue;
-                Vector3 worldForce = transform.TransformDirection(model.DirectionOf(i) * thrust);
-                Vector3 worldPoint = transform.TransformPoint(model.Def(i).Position);
+                Vector3 worldForce = transform.TransformDirection(frame * (model.DirectionOf(i) * thrust));
+                Vector3 worldPoint = transform.TransformPoint(frame * model.Def(i).Position);
                 body.AddForceAtPosition(worldForce, worldPoint, ForceMode.Force);
             }
         }

@@ -1423,10 +1423,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 895726407}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 52.784996, y: -7.805}
-  m_SizeDelta: {x: 26.59, y: 15.61}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &98151411
 MonoBehaviour:
@@ -2548,6 +2548,7 @@ GameObject:
   - component: {fileID: 183191524}
   - component: {fileID: 183191529}
   - component: {fileID: 183191528}
+  - component: {fileID: 183191530}
   m_Layer: 0
   m_Name: Hytech
   m_TagString: Untagged
@@ -2770,7 +2771,25 @@ MonoBehaviour:
   rovId: tortuga
   fullForce: {x: 200, y: 200, z: 300}
   fullYawTorque: 60
+  bodyYaw: 180
   Command: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &183191530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183191523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08104733ba11b5d4791b2590778633e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pilotCamera: {fileID: 1471862983}
+  pilotYaw: 180
+  hud: {fileID: 508137294}
+  orbitDistance: 8
+  orbitHeight: 1
 --- !u!1 &184107504
 GameObject:
   m_ObjectHideFlags: 0
@@ -4107,10 +4126,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 895726407}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 96.305, y: -7.805}
-  m_SizeDelta: {x: 28.45, y: 15.61}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &266608296
 MonoBehaviour:
@@ -8221,10 +8240,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 895726407}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 11.745, y: -7.805}
-  m_SizeDelta: {x: 23.49, y: 15.61}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &489605335
 MonoBehaviour:
@@ -9104,6 +9123,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   maxAltitude: 500
   searchInterval: 1
+  bodyYaw: 180
 --- !u!114 &508137296
 MonoBehaviour:
   m_ObjectHideFlags: 0
