@@ -141,15 +141,15 @@ namespace Falah.RovSim.Core
             },
             new ScenarioOption
             {
-                Id = "black-box", DisplayName = "Pencarian dan pengangkatan black box",
-                Description = "Menemukan dan mengangkat perangkat kecil dalam visibilitas rendah.",
-                LevelLabel = "Menengah", Level = LevelKind.Medium, Selectable = false, TimeLimit = "45 menit",
+                Id = "black-box", DisplayName = "Pencarian black box",
+                Description = "Menemukan perangkat kecil di dasar laut dengan sonar dan lampu, mencatat posisinya, lalu kembali ke permukaan.",
+                LevelLabel = "Menengah", Level = LevelKind.Medium, Selectable = true, TimeLimit = "45 menit",
                 Objectives = new[]
                 {
-                    "Luncurkan ROV dan transit ke area kontak sonar.",
-                    "Identifikasi objek secara visual dan catat posisi.",
-                    "Pasang pengait pada perangkat dan angkat ke permukaan.",
-                    "Pulihkan ROV tanpa tether tersangkut.",
+                    "Menuju area pencarian dan dekati kontak sonar.",
+                    "Identifikasi black box secara visual (nyalakan lampu: L).",
+                    "Catat posisi black box (Enter).",
+                    "Kembali ke permukaan.",
                 },
             },
             new ScenarioOption

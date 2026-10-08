@@ -56,7 +56,12 @@ namespace Falah.RovSim.Scenario
             var objective = scenario.Objectives[ActiveIndex];
             activeSeconds += deltaTime;
 
-            if (targets.TryGetPosition(objective.TargetName, out Vector3 target))
+            if (objective.Type == ObjectiveType.Surface)
+            {
+                Progress = 0f;
+                if (vehicle.Depth <= objective.Radius) { Resolve(ObjectiveStatus.Done, log); return; }
+            }
+            else if (targets.TryGetPosition(objective.TargetName, out Vector3 target))
             {
                 if (Satisfied(objective, vehicle, target, deltaTime)) { Resolve(ObjectiveStatus.Done, log); return; }
             }
@@ -81,7 +86,10 @@ namespace Falah.RovSim.Scenario
                 case ObjectiveType.HoldPosition:
                     return Hold(inside, objective, deltaTime);
                 case ObjectiveType.Identify:
-                    return Hold(inside && InView(vehicle, target, objective.ViewHalfAngleDegrees), objective, deltaTime);
+                    return Hold(inside && InView(vehicle, target, objective.ViewHalfAngleDegrees) && Lit(vehicle, objective), objective, deltaTime);
+                case ObjectiveType.MarkPosition:
+                    Progress = 0f;
+                    return inside && vehicle.MarkPressed;
                 default:
                     return false;
             }
@@ -92,6 +100,13 @@ namespace Falah.RovSim.Scenario
             holdSeconds = condition ? holdSeconds + deltaTime : 0f;
             Progress = objective.HoldSeconds > 0f ? Mathf.Clamp01(holdSeconds / objective.HoldSeconds) : (condition ? 1f : 0f);
             return condition && holdSeconds >= objective.HoldSeconds;
+        }
+
+        /// <summary>True when the target can be seen: shallow water has sunlight, deeper water needs the lamp on.</summary>
+        static bool Lit(VehicleState vehicle, ObjectiveDef objective)
+        {
+            if (objective.LampRequiredBelowDepth < 0f || vehicle.Depth <= objective.LampRequiredBelowDepth) return true;
+            return vehicle.LampLevel >= objective.MinLampLevel;
         }
 
         static bool InView(VehicleState vehicle, Vector3 target, float halfAngleDegrees)

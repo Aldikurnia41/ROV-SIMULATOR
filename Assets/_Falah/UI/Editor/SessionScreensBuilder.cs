@@ -176,6 +176,8 @@ namespace Falah.RovSim.UI.Editor
             UiKit.Bind(controller, "instructorCanvas", go);
             var driver = controllerGo.AddComponent<Falah.RovSim.Scenario.ScenarioDriver>();
             UiKit.Bind(driver, "telemetrySource", adapter);
+            var lampType = System.Type.GetType("Falah.RovSim.Integration.RovLamp, Assembly-CSharp");
+            if (lampType != null && controllerGo.GetComponent(lampType) == null) controllerGo.AddComponent(lampType);
 
             UiKit.Bind(station, "session", controller);
             UiKit.Bind(station, "telemetrySource", adapter);

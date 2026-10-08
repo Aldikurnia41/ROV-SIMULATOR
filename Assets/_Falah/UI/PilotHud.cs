@@ -97,6 +97,7 @@ namespace Falah.RovSim.UI
             timerElapsed.text = Clock(SessionLog.Current.Elapsed);
             timerLimit.text = "/ " + (limitSeconds > 0f ? Clock(limitSeconds) : "--:--");
             UpdateThrusters();
+            SetLight(LampState.Current.Level);
             var setup = SessionSetup.Current;
             current.text = Format(setup.CurrentKnots, "0.0") + " kn <size=65%><color=#93A7C2>" +
                            Format(setup.CurrentDirectionDegrees, "000") + "°" + UnitEnd;
