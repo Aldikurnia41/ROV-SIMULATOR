@@ -7,6 +7,8 @@ public class RoVPhysics : MonoBehaviour
 {
     public Rigidbody Rbd;
     public float PropForce;
+    [Tooltip("Keyboard-driven forces of the original prototype. Turn off when a RovThrusterDriver drives this body.")]
+    public bool UseLegacyInput = true;
     public InputAction Forward, Backward, Left, Right, Up, Down;
 
     public InputAction TiltLeft, TiltRight, TiltUp, TiltDown;
@@ -49,8 +51,8 @@ public class RoVPhysics : MonoBehaviour
 
     void FixedUpdate()
     {
-       
-        DetectInput();
+
+        if (UseLegacyInput) DetectInput();
         ApplyBuoyancy();
         ApplyQuadraticDrag();
     }

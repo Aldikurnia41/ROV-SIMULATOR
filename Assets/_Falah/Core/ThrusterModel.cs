@@ -197,8 +197,8 @@ namespace Falah.RovSim.Core
     /// </summary>
     public static class ThrusterLayouts
     {
-        const float Force = 60f;   // PLACEHOLDER newtons
-        const float Reverse = 50f; // PLACEHOLDER newtons
+        const float Force = 300f;   // PLACEHOLDER newtons (sized for the 20 kg scene ROV and its drag, not real hardware)
+        const float Reverse = 250f; // PLACEHOLDER newtons
 
         static ThrusterDef T(string name, Vector3 position, Vector3 direction) =>
             new ThrusterDef { Name = name, Position = position, Direction = direction, MaxForward = Force, MaxReverse = Reverse, ResponseTime = 0.25f };
